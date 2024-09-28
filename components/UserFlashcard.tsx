@@ -38,7 +38,7 @@ const UserFlashcard = ({ user }: UserFlashcardProps) => {
     <View style={styles.card} className="p-4 relative">
       {/* Profile Image with Gradient Background */}
       <LinearGradient
-        colors={["#6EE7B7", "#3B82F6"]}
+        colors={["#42a5f5", "#1e88e5", "#3f51b5"]}
         className="absolute top-0 left-0 right-0 h-24 rounded-t-lg"
       />
 

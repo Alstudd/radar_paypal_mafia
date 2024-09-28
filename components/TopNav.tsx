@@ -1,3 +1,4 @@
+import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
@@ -29,13 +30,11 @@ const styles = StyleSheet.create({
   },
   button: {
     paddingVertical: 8,
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     borderRadius: 25,
   },
   activeButton: {
-    // backgroundColor: "#4A90E2",
-    borderBottomWidth: 2,
-    borderBottomColor: "#4A90E2",
+    backgroundColor: "#1e88e5",
   },
   buttonText: {
     color: "white",

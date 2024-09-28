@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Tabs } from "expo-router";
+import { Tabs, useSegments } from "expo-router";
 import { View, Image, ImageSourcePropType, StyleSheet } from "react-native";
 import TopNav from "@/components/TopNav";
 import { icons } from "@/constants";
@@ -18,8 +18,8 @@ const TabIcon = ({
     }`}
   >
     <View
-      className={`rounded-full w-12 h-12 items-center justify-center ${
-        focused ? "bg-blue-500" : ""
+      className={`rounded-full w-11 h-11 items-center justify-center ${
+        focused ? "bg-[#1e88e5]" : ""
       }`}
     >
       <Image
@@ -34,10 +34,12 @@ const TabIcon = ({
 
 export default function Layout() {
   const [selectedMode, setSelectedMode] = useState("User");
+  const segments = useSegments<any>();
+  const isChatScreen = segments.includes("chat");
 
   return (
     <>
-      <SafeAreaView className="flex items-center justify-center">
+      <SafeAreaView className={`flex items-center justify-center ${isChatScreen && "bg-[#1e88e5]"}`}>
         <View style={styles.container}>
           <TopNav
             selectedMode={selectedMode}
@@ -58,14 +60,14 @@ export default function Layout() {
             paddingBottom: 0, // ios only
             overflow: "hidden",
             marginHorizontal: 20,
-            marginBottom: 20,
+            marginVertical: 10,
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
             flexDirection: "row",
             zIndex: 99,
             elevation: 1,
-            height: 66,
+            height: 60,
           },
         }}
       >
@@ -124,8 +126,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     marginHorizontal: 20,
+    marginVertical: 10,
     zIndex: 99,
     elevation: 1,
-    height: 62,
+    height: 55,
   },
 });
