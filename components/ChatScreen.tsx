@@ -14,6 +14,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import Profiles from "@/components/chat/Profiles";
 import Messages from "@/components/chat/Messages";
 import { router } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const ChatScreen = () => {
   const URL = `https://api.github.com/users`;
@@ -48,92 +49,92 @@ const ChatScreen = () => {
   console.log(data.login);
 
   return (
-    <LinearGradient
-      colors={["#1e88e5", "#f20042", "#EEEEEE"]}
-      style={styles.gradient}
-    >
-      <View style={styles.headerContainer}>
-        <Text className="font-JakartaExtraBold" style={styles.header}>
-          Stories
-        </Text>
-        <Icon name="add" color="#fff" size={30} />
-      </View>
-      <ScrollView
-        horizontal
-        style={styles.proContainer}
-        showsHorizontalScrollIndicator={false}
+    <SafeAreaView className="bg-[#1e88e5]">
+      <LinearGradient
+        className="mt-20"
+        colors={["#1e88e5", "#f20042", "#EEEEEE"]}
+        style={styles.gradient}
       >
-        {loading ? (
-          <ActivityIndicator size="small" color="#FFF" />
-        ) : (
-          <Animated.View style={[styles.card]}>
-            {data.map((item: any, index: any) => (
-              <Profiles
-                key={item.id}
-                username={item.login}
-                uri={item.avatar_url}
-              />
-            ))}
-          </Animated.View>
-        )}
-      </ScrollView>
-      <View style={styles.ops}>
-        <View style={styles.col}>
-          <Text className="font-JakartaExtraBold" style={styles.day}>
-            Chats
-          </Text>
-          <Entypo name="dots-three-horizontal" color="#000119" size={30} />
+        <View>
+          <View style={styles.headerContainer}>
+            <Text className="font-JakartaExtraBold" style={styles.header}>
+              Stories
+            </Text>
+            <Icon name="add" color="#fff" size={30} />
+          </View>
+          <ScrollView
+            horizontal
+            style={styles.proContainer}
+            showsHorizontalScrollIndicator={false}
+          >
+            {loading ? (
+              <ActivityIndicator size="small" color="#FFF" />
+            ) : (
+              <Animated.View style={[styles.card]}>
+                {data.map((item: any, index: any) => (
+                  <Profiles
+                    key={item.id}
+                    username={item.login}
+                    uri={item.avatar_url}
+                  />
+                ))}
+              </Animated.View>
+            )}
+          </ScrollView>
         </View>
-        <ScrollView>
-          {loading ? (
-            <ActivityIndicator size="large" color="#f20042" />
-          ) : (
-            <Animated.View style={[styles.list]}>
-              {data.map((item: any, index: any) => (
-                <Messages
-                  key={item.id}
-                  username={item.login}
-                  uri={item.avatar_url}
-                  count={Math.floor(Math.random() * 3)}
-                  onPress={() => {
-                    router.push({
-                      pathname: "/(root)/discussion",  // Path to your Discussion screen
-                      params: {
-                        itemId: item.id,
-                        itemName: item.login,
-                        itemPic: item.avatar_url,
-                      },
-                    });
-                  }}
-                />
-              ))}
-            </Animated.View>
-          )}
-        </ScrollView>
-      </View>
-    </LinearGradient>
+        <View style={styles.ops}>
+          <View className="h-[500px]">
+            <View style={styles.col}>
+              <Text className="font-JakartaExtraBold" style={styles.day}>
+                Chats
+              </Text>
+              <Entypo name="dots-three-horizontal" color="#000119" size={30} />
+            </View>
+            <ScrollView>
+              {loading ? (
+                <ActivityIndicator size="large" color="#f20042" />
+              ) : (
+                <Animated.View style={styles.list}>
+                  {data.map((item: any, index: any) => (
+                    <Messages
+                      key={item.id}
+                      username={item.login}
+                      uri={item.avatar_url}
+                      count={Math.floor(Math.random() * 3)}
+                      onPress={() => {
+                        router.push({
+                          pathname: "/(root)/discussion", // Path to your Discussion screen
+                          params: {
+                            itemId: item.id,
+                            itemName: item.login,
+                            itemPic: item.avatar_url,
+                          },
+                        });
+                      }}
+                    />
+                  ))}
+                </Animated.View>
+              )}
+            </ScrollView>
+          </View>
+        </View>
+      </LinearGradient>
+    </SafeAreaView>
   );
 };
 export default ChatScreen;
 
 const styles = StyleSheet.create({
   list: {
-    // marginTop: 300,
-    marginBottom: 10,
+    marginTop: -10,
+    marginBottom: 20,
   },
   card: {
-    // marginLeft: 400,
-    // width: 400,
     flexDirection: "row",
   },
   gradient: {
     height: "100%",
-    position: "absolute",
-    left: 0,
-    right: 0,
-    top: 0,
     paddingHorizontal: 20,
-    // paddingTop: 10,
   },
   headerContainer: {
     flexDirection: "row",
@@ -151,9 +152,10 @@ const styles = StyleSheet.create({
   ops: {
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
-    height: 500,
-    backgroundColor: "#EEEEEE",
+    height: "100%",
+    backgroundColor: "white",
     marginHorizontal: -20,
+    marginTop: 20,
   },
   col: {
     flexDirection: "row",

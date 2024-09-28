@@ -39,14 +39,9 @@ export default function Layout() {
 
   return (
     <>
-      <SafeAreaView className={`flex items-center justify-center ${isChatScreen && "bg-[#1e88e5]"}`}>
-        <View style={styles.container}>
-          <TopNav
-            selectedMode={selectedMode}
-            setSelectedMode={setSelectedMode}
-          />
-        </View>
-      </SafeAreaView>
+      <View className="flex justify-center items-center">
+        <TopNav selectedMode={selectedMode} setSelectedMode={setSelectedMode} />
+      </View>
 
       <Tabs
         initialRouteName="index"
@@ -68,6 +63,7 @@ export default function Layout() {
             zIndex: 99,
             elevation: 1,
             height: 60,
+            position: "absolute",
           },
         }}
       >
@@ -115,20 +111,3 @@ export default function Layout() {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#333333",
-    borderRadius: 50,
-    overflow: "hidden",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    flexDirection: "row",
-    marginHorizontal: 20,
-    marginVertical: 10,
-    zIndex: 99,
-    elevation: 1,
-    height: 55,
-  },
-});

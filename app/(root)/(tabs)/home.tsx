@@ -9,6 +9,7 @@ import {
   Web3MobileWallet,
 } from "@solana-mobile/mobile-wallet-adapter-protocol-web3js";
 import CustomButton from "@/components/CustomButton";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export const APP_IDENTITY = {
   name: "Radar - Paypal Mafia",
@@ -40,31 +41,33 @@ const home = () => {
   };
 
   return (
-    <View className="mx-5">
-      <View className="flex flex-row items-center justify-between my-5">
-        <Text className="text-2xl font-JakartaBold">
-          Welcome {user?.firstName}👋
-        </Text>
-        <TouchableOpacity
-          onPress={handleSignOut}
-          className="justify-center items-center w-10 h-10 rounded-full bg-white"
-        >
-          <Image source={icons.out} className="w-4 h-4" />
-        </TouchableOpacity>
+    <SafeAreaView>
+      <View className="mx-5 mt-20">
+        <View className="flex flex-row items-center justify-between my-5">
+          <Text className="text-2xl font-JakartaBold">
+            Welcome {user?.firstName}👋
+          </Text>
+          <TouchableOpacity
+            onPress={handleSignOut}
+            className="justify-center items-center w-10 h-10 rounded-full bg-white"
+          >
+            <Image source={icons.out} className="w-4 h-4" />
+          </TouchableOpacity>
+        </View>
+        <CustomButton
+          title="Connect Wallet"
+          onPress={connect}
+          className="mt-5"
+          IconLeft={() => (
+            <Image
+              source={icons.list}
+              resizeMode="contain"
+              className="w-5 h-5 mx-2"
+            />
+          )}
+        />
       </View>
-      <CustomButton
-        title="Connect Wallet"
-        onPress={connect}
-        className="mt-5"
-        IconLeft={() => (
-          <Image
-            source={icons.list}
-            resizeMode="contain"
-            className="w-5 h-5 mx-2"
-          />
-        )}
-      />
-    </View>
+    </SafeAreaView>
   );
 };
 
