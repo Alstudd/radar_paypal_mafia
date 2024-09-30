@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Tabs, useSegments } from "expo-router";
 import { View, Image, ImageSourcePropType, StyleSheet } from "react-native";
 import TopNav from "@/components/TopNav";
@@ -33,14 +33,13 @@ const TabIcon = ({
 );
 
 export default function Layout() {
-  const [selectedMode, setSelectedMode] = useState("User");
   const segments = useSegments<any>();
   const isChatScreen = segments.includes("chat");
 
   return (
     <>
       <View className="flex justify-center items-center">
-        <TopNav selectedMode={selectedMode} setSelectedMode={setSelectedMode} />
+        <TopNav />
       </View>
 
       <Tabs

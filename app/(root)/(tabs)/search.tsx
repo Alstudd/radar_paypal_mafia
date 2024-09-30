@@ -4,6 +4,8 @@ import FlashCard from "@/components/FlashCard";
 import FlashcardWrapper from "@/components/FlashcardWrapper";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import UserFlashcard from "@/components/UserFlashcard";
+import { useSelectedMode } from "@/contexts/SelectedModeContext";
+import RecruiterFlashcardWrapper from "@/components/recruiter/RecruiterFlashcardWrapper";
 // import users from "@/assets/data/users";
 
 interface User {
@@ -19,6 +21,8 @@ interface User {
 }
 
 const Search = () => {
+  const { selectedMode } = useSelectedMode();
+
   const users: User[] = [
     {
       name: "Alice Smith",
@@ -255,14 +259,21 @@ const Search = () => {
   };
 
   return (
-    <View style={styles.pageContainer}>
-      <FlashcardWrapper
-        data={users}
-        renderItem={({ item }: { item: User }) => <UserFlashcard user={item} />}
-        onSwipeLeft={onSwipeLeft}
-        onSwipeRight={onSwipeRight}
-      />
-    </View>
+    <>
+      {selectedMode === "User" && (
+        <View style={styles.pageContainer}>
+          <FlashcardWrapper
+            data={users}
+            renderItem={({ item }: { item: User }) => (
+              <UserFlashcard user={item} />
+            )}
+            onSwipeLeft={onSwipeLeft}
+            onSwipeRight={onSwipeRight}
+          />
+        </View>
+      )}
+      {selectedMode === "Recruiter" && <RecruiterFlashcardWrapper />}
+    </>
   );
 };
 

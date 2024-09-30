@@ -1,8 +1,10 @@
-import { LinearGradient } from "expo-linear-gradient";
-import React, { useState } from "react";
+// TopNav.tsx
+import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { useSelectedMode } from "@/contexts/SelectedModeContext";
 
-const TopNav = ({ selectedMode, setSelectedMode }: { selectedMode: string, setSelectedMode: (selectedMode: string) => void }) => {
+const TopNav = () => {
+  const { selectedMode, setSelectedMode } = useSelectedMode();
 
   return (
     <View style={styles.container}>
