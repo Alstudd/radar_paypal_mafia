@@ -14,7 +14,7 @@ const OAuth = () => {
 
     if (result.code === "session_exists") {
       Alert.alert("Success", "Session exists. Redirecting to home screen.");
-      router.replace("/(root)/(tabs)/home");
+      router.replace("/(root)/userFlashcardForm");
     }
 
     Alert.alert(result.success ? "Success" : "Error", result.message);

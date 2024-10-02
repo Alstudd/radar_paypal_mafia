@@ -7,9 +7,11 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Platform,
+  TouchableOpacity,
 } from "react-native";
 
 import { InputFieldProps } from "@/types/type";
+import { MaterialIcons } from "@expo/vector-icons";
 
 const InputField = ({
   label,
@@ -20,6 +22,10 @@ const InputField = ({
   inputStyle,
   iconStyle,
   className,
+  useExpoVectorIcons,
+  iconRight,
+  rightIcon,
+  righButtonOnPress,
   ...props
 }: InputFieldProps) => {
   return (
@@ -34,14 +40,36 @@ const InputField = ({
           <View
             className={`flex flex-row justify-start items-center relative bg-neutral-100 rounded-full border border-neutral-100 focus:border-primary-500  ${containerStyle}`}
           >
-            {icon && (
-              <Image source={icon} className={`w-6 h-6 ml-4 ${iconStyle}`} />
+            {useExpoVectorIcons ? (
+              <View className="ml-4 mt-[3px]">
+                <MaterialIcons
+                  name={icon}
+                  size={24}
+                  className={`${iconStyle}`}
+                  color={"#0286FF"}
+                />
+              </View>
+            ) : (
+              icon && (
+                <Image source={icon} className={`w-6 h-6 ml-4 ${iconStyle}`} />
+              )
             )}
             <TextInput
-              className={`rounded-full p-4 font-JakartaSemiBold text-[15px] flex-1 ${inputStyle} text-left`}
+              cursorColor={"#0286FF"}
+              className={`rounded-full p-4 font-JakartaSemiBold text-[15px] flex-1 ${inputStyle} text-leff`}
               secureTextEntry={secureTextEntry}
               {...props}
             />
+            {iconRight && (
+              <TouchableOpacity onPress={righButtonOnPress} className="mr-4">
+                <MaterialIcons
+                  name={rightIcon}
+                  size={32}
+                  className={`${iconStyle}`}
+                  color={"#0286FF"}
+                />
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       </TouchableWithoutFeedback>

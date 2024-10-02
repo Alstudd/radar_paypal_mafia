@@ -44,17 +44,17 @@ export default function RootLayout() {
   }
 
   return (
-    <SelectedModeProvider>
-      <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
-        <ClerkLoaded>
+    <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
+      <ClerkLoaded>
+        <SelectedModeProvider>
           <Stack>
             <Stack.Screen name="index" options={{ headerShown: false }} />
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />
             <Stack.Screen name="(root)" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" />
           </Stack>
-        </ClerkLoaded>
-      </ClerkProvider>
-    </SelectedModeProvider>
+        </SelectedModeProvider>
+      </ClerkLoaded>
+    </ClerkProvider>
   );
 }

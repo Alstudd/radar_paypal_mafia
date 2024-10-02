@@ -18,4 +18,8 @@ declare interface InputFieldProps extends TextInputProps {
   inputStyle?: string;
   iconStyle?: string;
   className?: string;
+  useExpoVectorIcons?: boolean;
+  iconRight?: boolean;
+  rightIcon?: any;
+  righButtonOnPress?: () => void;
 }

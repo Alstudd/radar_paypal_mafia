@@ -27,7 +27,7 @@ const SignIn = () => {
 
       if (signInAttempt.status === "complete") {
         await setActive({ session: signInAttempt.createdSessionId });
-        router.replace("/(root)/(tabs)/home");
+        router.replace("/(root)/userFlashcardForm");
       } else {
         console.log(JSON.stringify(signInAttempt, null, 2));
         Alert.alert("Error", "Log in failed. Please try again.");
@@ -42,7 +42,12 @@ const SignIn = () => {
     <ScrollView className="flex-1 bg-white">
       <View className="flex-1 bg-white">
         <View className="relative w-full h-[250px]">
-          <Image source={{uri: "https://c4.wallpaperflare.com/wallpaper/58/483/756/digital-digital-art-artwork-illustration-romain-trystram-hd-wallpaper-preview.jpg"}} className="z-0 w-full h-[250px]" />
+          <Image
+            source={{
+              uri: "https://c4.wallpaperflare.com/wallpaper/58/483/756/digital-digital-art-artwork-illustration-romain-trystram-hd-wallpaper-preview.jpg",
+            }}
+            className="z-0 w-full h-[250px]"
+          />
           <Text className="text-2xl text-white font-JakartaSemiBold absolute bottom-5 left-5">
             Welcome 👋
           </Text>
