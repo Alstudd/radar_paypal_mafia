@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -13,14 +13,26 @@ import Icon from "@expo/vector-icons/Ionicons";
 export default function Calendar({
   setOpen,
   setDate,
+  setAge,
 }: {
   setOpen: (open: boolean) => void;
   setDate: (date: Date) => void;
+  setAge: (age: number) => void;
 }) {
   const days = ["S", "M", "T", "W", "T", "F", "S"];
   const currentDate = dayjs();
   const [today, setToday] = useState(currentDate);
   const [selectDate, setSelectDate] = useState(currentDate);
+
+  const calculateAge = (dob: dayjs.Dayjs) => {
+    const today = dayjs();
+    const age = today.diff(dob, "year");
+    return age;
+  };
+
+  useEffect(() => {
+    setAge(calculateAge(selectDate));
+  }, [selectDate]);
 
   return (
     <View className="bg-white" style={styles.container}>
@@ -33,7 +45,9 @@ export default function Calendar({
             >
               <Icon name="arrow-up-circle" size={28} color="#0286FF" />
             </TouchableOpacity>
-            <Text className="font-JakartaSemiBold text-[16px] text-[#000]">Year</Text>
+            <Text className="font-JakartaSemiBold text-[16px] text-[#000]">
+              Year
+            </Text>
             <TouchableOpacity
               onPress={() => setToday(today.year(today.year() - 1))}
               style={styles.navButtonContainer}
@@ -49,7 +63,9 @@ export default function Calendar({
             >
               <Icon name="arrow-up-circle" size={28} color="#0286FF" />
             </TouchableOpacity>
-            <Text className="font-JakartaSemiBold text-[16px] text-[#000]">Month</Text>
+            <Text className="font-JakartaSemiBold text-[16px] text-[#000]">
+              Month
+            </Text>
             <TouchableOpacity
               onPress={() => setToday(today.month(today.month() - 1))}
               style={styles.navButtonContainer}
@@ -57,13 +73,12 @@ export default function Calendar({
               <Icon name="arrow-down-circle" size={28} color="#0286FF" />
             </TouchableOpacity>
           </View>
-
         </View>
-          <View className="my-2 mx-6">
-            <Text className="font-JakartaBold text-[18px]">
-              {months[today.month()]}, {today.year()}
-            </Text>
-          </View>
+        <View className="my-2 mx-6">
+          <Text className="font-JakartaBold text-[18px]">
+            {months[today.month()]}, {today.year()}
+          </Text>
+        </View>
 
         <View style={styles.dayLabels}>
           {days.map((day, index) => (
@@ -102,7 +117,7 @@ export default function Calendar({
           DOB: {selectDate.toDate().toDateString()}
         </Text>
         <Text className="font-JakartaMedium mt-1" style={styles.noMeetingText}>
-          Selected Date of Birth
+          Age: {calculateAge(selectDate)} years
         </Text>
       </View>
       <View className="absolute top-0 right-9">

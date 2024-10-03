@@ -8,6 +8,9 @@ import {
   Image,
   StyleSheet,
   Modal,
+  Platform,
+  Alert,
+  Switch,
 } from "react-native";
 import InputField from "./InputField";
 import InputArea from "./InputArea";
@@ -25,6 +28,11 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import Calendar from "./Calendar";
+import * as ImagePicker from "expo-image-picker";
+import * as DocumentPicker from "expo-document-picker";
+import { WebView } from "react-native-webview";
+import { useColorScheme } from "nativewind";
+import { StatusBar } from "expo-status-bar";
 
 const steps = [
   { id: 1, title: "Basic Details" },
@@ -32,8 +40,10 @@ const steps = [
   { id: 3, title: "Projects & Skills" },
   { id: 4, title: "Interests & Domains" },
   { id: 5, title: "Social Links" },
-  { id: 6, title: "Investment Preferences" },
-  { id: 7, title: "Blockchain Wallet" },
+  { id: 6, title: "Achievements" },
+  { id: 7, title: "Documents" },
+  { id: 8, title: "Investment Preferences" },
+  { id: 9, title: "Blockchain Wallet" },
 ];
 
 const avatarImages = [
@@ -72,20 +82,28 @@ const UserFlashcardForm = () => {
   const [interest, setInterest] = useState("");
   const [domain, setDomain] = useState("");
   const [socialLink, setSocialLink] = useState("");
+  const [achievement, setAchievement] = useState("");
 
   const [skills, setSkills] = useState<string[]>([]);
   const [interests, setInterests] = useState<string[]>([]);
   const [domains, setDomains] = useState<string[]>([]);
   const [projects, setProjects] = useState([
-    { name: "", link: "", description: "" },
+    { title: "", link: "", description: "" },
   ]);
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
+  const [achievements, setAchievements] = useState<string[]>([]);
 
   const [selectedGender, setSelectedGender] = useState(null);
+  const [age, setAge] = useState(0);
+  const [profilePicture, setProfilePicture] = useState<any>(null);
+  const [resume, setResume] = useState<any>(null);
 
-  const handleGenderSelect = (gender: any) => {
-    setSelectedGender(gender);
-  };
+  const [date, setDate] = useState(new Date());
+  const [open, setOpen] = useState(false);
+
+  const { colorScheme, toggleColorScheme } = useColorScheme();
+
+  const progressAnimation = useState(new Animated.Value(0))[0];
 
   const { signOut } = useAuth();
 
@@ -94,10 +112,9 @@ const UserFlashcardForm = () => {
     router.replace("/(auth)/sign-in");
   };
 
-  const [date, setDate] = useState(new Date());
-  const [open, setOpen] = useState(false);
-
-  const progressAnimation = useState(new Animated.Value(0))[0];
+  const handleGenderSelect = (gender: any) => {
+    setSelectedGender(gender);
+  };
 
   useEffect(() => {
     const progress = (currentStep + 1) / steps.length;
@@ -165,11 +182,11 @@ const UserFlashcardForm = () => {
   const addProject = () => {
     let currentIndex = projects.length - 1;
     if (
-      projects[currentIndex].name.trim() !== "" &&
+      projects[currentIndex].title.trim() !== "" &&
       projects[currentIndex].link.trim() !== "" &&
       projects[currentIndex].description.trim() !== ""
     ) {
-      setProjects([...projects, { name: "", link: "", description: "" }]);
+      setProjects([...projects, { title: "", link: "", description: "" }]);
     }
   };
 
@@ -222,8 +239,42 @@ const UserFlashcardForm = () => {
     setSocialLinks(socialLinks.filter((_, i) => i !== index));
   };
 
+  const addAchievement = () => {
+    if (achievement.trim() !== "") {
+      setAchievements([...achievements, achievement.trim()]);
+      setAchievement("");
+    }
+  };
+
+  const removeAchievement = (index: number) => {
+    setAchievements(achievements.filter((_, i) => i !== index));
+  };
+
+  const selectImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    if (!result.canceled && result.assets) {
+      setProfilePicture(result.assets[0]);
+    }
+  };
+
+  const selectDocument = async () => {
+    const result = await DocumentPicker.getDocumentAsync({
+      type: "application/pdf",
+      copyToCacheDirectory: true,
+    });
+
+    if (!result.canceled) {
+      setResume(result);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
+      {/* <StatusBar backgroundColor={colorScheme == "dark" ? "black" : "white"} style={colorScheme == "dark" ? "light" : "dark"} /> */}
       <View style={styles.header}>
         <View className="flex flex-row justify-between items-center">
           {currentStep > 0 ? (
@@ -234,7 +285,10 @@ const UserFlashcardForm = () => {
               <Icon name="chevron-back" size={24} color="#000" />
             </TouchableOpacity>
           ) : (
-            <View></View>
+            <Switch
+              value={colorScheme == "dark"}
+              onChange={toggleColorScheme}
+            />
           )}
           <TouchableOpacity onPress={handleSignOut} style={styles.logoutButton}>
             <Icon name="log-out-outline" size={24} color="#fff" />
@@ -254,7 +308,7 @@ const UserFlashcardForm = () => {
                 }}
               />
             </View>
-            <Text className="text-2xl font-JakartaBold self-center">
+            <Text className="text-2xl font-JakartaBold self-center text-center">
               {steps[currentStep].title}
             </Text>
           </View>
@@ -292,7 +346,7 @@ const UserFlashcardForm = () => {
                 value={formValues.designation}
                 onChangeText={(value) => handleChange("designation", value)}
                 useExpoVectorIcons={true}
-                icon="mail"
+                icon="manage-accounts"
               />
               <InputArea
                 label="Profile Bio"
@@ -341,29 +395,27 @@ const UserFlashcardForm = () => {
                 ))}
               </View>
 
-              <View className="my-2 w-full">
-                <Text className="text-lg font-JakartaSemiBold mb-3">
-                  Select Your Date of Birth
-                </Text>
-                <TouchableOpacity
-                  onPress={() => setOpen(true)}
-                  className="flex flex-row justify-start items-center relative bg-neutral-100 rounded-full border border-neutral-100 focus:border-primary-500"
-                >
-                  <View className="ml-4">
-                    <MaterialIcons
-                      name="date-range"
-                      size={24}
-                      className=""
-                      color={"#0286FF"}
-                    />
-                  </View>
-                  <View className="rounded-full p-4 font-JakartaSemiBold text-[15px] flex-1">
-                    <Text className="text-lg font-JakartaSemiBold mb-[4px]">
-                      {date.toString().split(" ").slice(1, 4).join(" ")}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
+              <Text className="text-lg font-JakartaSemiBold mb-3">
+                Select Your Date of Birth
+              </Text>
+              <TouchableOpacity
+                onPress={() => setOpen(true)}
+                className="flex flex-row justify-start items-center relative bg-neutral-100 rounded-full border border-neutral-100 focus:border-primary-500"
+              >
+                <View className="ml-4">
+                  <MaterialIcons
+                    name="date-range"
+                    size={24}
+                    className=""
+                    color={"#0286FF"}
+                  />
+                </View>
+                <View className="rounded-full p-4 font-JakartaSemiBold text-[15px] flex-1">
+                  <Text className="text-lg font-JakartaSemiBold mb-[4px]">
+                    {date.toString().split(" ").slice(1, 4).join(" ")}
+                  </Text>
+                </View>
+              </TouchableOpacity>
 
               <Modal
                 animationType="slide"
@@ -371,14 +423,38 @@ const UserFlashcardForm = () => {
                 visible={open}
                 onRequestClose={() => setOpen(false)}
               >
-                    <Calendar setOpen={setOpen} setDate={setDate} />
-                    {/* <DatePicker
-                      mode="calendar"
-                      // minimumDate={startDate}
-                      selected={date}
-                      onDateChange={(date) => setDate(date)}
-                    /> */}
+                <Calendar setOpen={setOpen} setDate={setDate} setAge={setAge} />
               </Modal>
+
+              <Text className="text-lg font-JakartaSemiBold my-3">
+                Profile Picture
+              </Text>
+              <View style={styles.imageContainer}>
+                {profilePicture ? (
+                  <Image
+                    source={{ uri: profilePicture.uri }}
+                    style={styles.profileImage}
+                  />
+                ) : (
+                  <Icon
+                    name="person-circle-outline"
+                    size={100}
+                    color="#0286FF"
+                  />
+                )}
+              </View>
+
+              <TouchableOpacity
+                style={styles.uploadButton}
+                onPress={selectImage}
+              >
+                <Text
+                  className="font-JakartaBold text-center"
+                  style={styles.uploadButtonText}
+                >
+                  Select Profile Picture
+                </Text>
+              </TouchableOpacity>
             </View>
           )}
 
@@ -390,7 +466,7 @@ const UserFlashcardForm = () => {
                 value={skill}
                 onChangeText={setSkill}
                 useExpoVectorIcons={true}
-                icon="info"
+                icon="rocket-launch"
                 iconRight={true}
                 rightIcon="add-circle"
                 righButtonOnPress={addSkill}
@@ -439,11 +515,13 @@ const UserFlashcardForm = () => {
                     )}
                   </View>
                   <InputField
-                    placeholder="Enter project name"
-                    value={project.name}
+                    placeholder="Enter project title"
+                    value={project.title}
                     onChangeText={(value) =>
-                      updateProject(index, "name", value)
+                      updateProject(index, "title", value)
                     }
+                    useExpoVectorIcons={true}
+                    icon="title"
                   />
                   <InputField
                     placeholder="Enter project link"
@@ -451,6 +529,8 @@ const UserFlashcardForm = () => {
                     onChangeText={(value) =>
                       updateProject(index, "link", value)
                     }
+                    useExpoVectorIcons={true}
+                    icon="add-link"
                   />
                   <InputArea
                     placeholder="Enter project description"
@@ -458,12 +538,14 @@ const UserFlashcardForm = () => {
                     onChangeText={(value) =>
                       updateProject(index, "description", value)
                     }
+                    useExpoVectorIcons={true}
+                    icon="description"
                   />
                 </View>
               ))}
               <View className="">
                 <CustomButton
-                  className="mt-2"
+                  className="mt-2 rounded-[10px]"
                   title="Add Project"
                   onPress={addProject}
                   IconLeft={() => (
@@ -581,6 +663,77 @@ const UserFlashcardForm = () => {
           {currentStep === 5 && (
             <View>
               <InputField
+                label="Achievements"
+                placeholder="Enter your achievements"
+                value={achievement}
+                onChangeText={setAchievement}
+                useExpoVectorIcons={true}
+                icon="stars"
+                iconRight={true}
+                rightIcon="add-circle"
+                righButtonOnPress={addAchievement}
+              />
+              <View
+                className="flex flex-col gap-1"
+                style={styles.listContainer}
+              >
+                {achievements.map((item, index) => (
+                  <View key={index} style={styles.listItem}>
+                    <Text
+                      className="font-JakartaSemiBold"
+                      style={styles.listItemText}
+                    >
+                      {item}
+                    </Text>
+                    <TouchableOpacity onPress={() => removeAchievement(index)}>
+                      <Icon name="close-circle" size={24} color="#FF5E5E" />
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {currentStep === 6 && (
+            <View>
+              <Text className="text-lg font-JakartaSemiBold my-3">Resume</Text>
+              <View style={styles.previewContainer}>
+                {resume ? (
+                  // <WebView
+                  //   source={{ uri: resume.uri }}
+                  //   style={styles.pdfViewer}
+                  // />
+                  <View style={styles.pdfContainer}>
+                    <AntDesign name="pdffile1" size={100} color="#0286FF" />
+                    <Text
+                      className="text-center font-JakartaBold"
+                      style={styles.pdfName}
+                    >
+                      {resume.assets[0].name ? resume.assets[0].name : "PDF"}
+                    </Text>
+                  </View>
+                ) : (
+                  <Icon name="document-outline" size={100} color="#0286FF" />
+                )}
+              </View>
+
+              <TouchableOpacity
+                style={styles.uploadButton}
+                onPress={selectDocument}
+              >
+                <Text
+                  className="font-JakartaBold text-center"
+                  style={styles.uploadButtonText}
+                >
+                  Select Document
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {currentStep === 7 && (
+            <View>
+              <InputField
                 label="Investment Interests"
                 placeholder="Your investment preferences"
                 value={formValues.investmentInterests}
@@ -591,7 +744,7 @@ const UserFlashcardForm = () => {
             </View>
           )}
 
-          {currentStep === 6 && (
+          {currentStep === 8 && (
             <View>
               <InputField
                 label="Blockchain Wallet"
@@ -737,6 +890,51 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  imageContainer: {
+    marginBottom: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  profileImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 75,
+    borderColor: "#0286FF",
+    borderWidth: 2,
+    backgroundColor: "#fff",
+  },
+  uploadButton: {
+    backgroundColor: "#0286FF",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    elevation: 2,
+  },
+  uploadButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  previewContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  pdfViewer: {
+    width: "100%",
+    height: 400,
+  },
+  pdfContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  pdfName: {
+    marginTop: 10,
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#0286FF",
   },
 });
 
