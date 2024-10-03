@@ -5,10 +5,11 @@ import { Alert, Image, Text, View } from "react-native";
 import CustomButton from "@/components/CustomButton";
 import { icons } from "@/constants";
 import { googleOAuth } from "@/lib/auth";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import { useOkto, type OktoContextType } from "okto-sdk-react-native";
 
 const OAuth = () => {
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
-
   const handleGoogleSignIn = async () => {
     const result = await googleOAuth(startOAuthFlow);
 
@@ -19,6 +20,31 @@ const OAuth = () => {
 
     Alert.alert(result.success ? "Success" : "Error", result.message);
   };
+
+  const webClientId = `${process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID}` || "";
+  GoogleSignin.configure({
+    scopes: ["email", "profile"],
+    webClientId,
+  });
+  const { authenticate } = useOkto() as OktoContextType;
+  async function handleGoogleSignInUsingOkto() {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const response: any = await GoogleSignin.signIn();
+
+      const { idToken } = response;
+      authenticate(idToken, (result, error) => {
+        if (result) {
+          console.log("authentication successful");
+        }
+        if (error) {
+          console.error("authentication error:", error);
+        }
+      });
+    } catch (error) {
+      console.log("Something went wrong. Please try again");
+    }
+  }
 
   return (
     <View>
