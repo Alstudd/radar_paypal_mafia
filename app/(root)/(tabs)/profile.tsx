@@ -2,9 +2,30 @@ import { useUser } from "@clerk/clerk-expo";
 import { Image, ScrollView, Text, View } from "react-native";
 import InputField from "@/components/InputField";
 import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  useOkto,
+  type OktoContextType,
+  type User,
+} from "okto-sdk-react-native";
+import React, { useState } from "react";
 
 const Profile = () => {
   const { user } = useUser();
+
+  const { getUserDetails } = useOkto() as OktoContextType;
+  const [userDetails, setUserDetails] = useState<User | null>(null);
+
+  React.useEffect(() => {
+    getUserDetails()
+      .then((result) => {
+        setUserDetails(result);
+      })
+      .catch((error) => {
+        console.error(`error:`, error);
+      });
+  }, []);
+
+  console.log(userDetails);
 
   return (
     <SafeAreaView>
@@ -46,7 +67,7 @@ const Profile = () => {
               <InputField
                 label="Email"
                 placeholder={
-                  user?.primaryEmailAddress?.emailAddress || "Not Found"
+                  user?.primaryEmailAddress?.emailAddress || userDetails?.email || "Not Found"
                 }
                 containerStyle="w-full"
                 inputStyle="p-3.5"

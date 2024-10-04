@@ -7,8 +7,10 @@ import { icons } from "@/constants";
 import { googleOAuth } from "@/lib/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { useOkto, type OktoContextType } from "okto-sdk-react-native";
+import { fetchAPI } from "@/lib/fetch";
 
-const webClientId = "328551301503-nq398rv0ff8nrubpu8l71avde3c0h78e.apps.googleusercontent.com";
+const webClientId =
+  "328551301503-nq398rv0ff8nrubpu8l71avde3c0h78e.apps.googleusercontent.com";
 
 const OAuth = () => {
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
@@ -32,11 +34,33 @@ const OAuth = () => {
       });
       await GoogleSignin.hasPlayServices();
       const response: any = await GoogleSignin.signIn();
-      console.log(response);
-      const { idToken } = response;
+
+      const { data } = await fetchAPI("/(api)/user");
+      const user = data.find((user: any) => user.email === response.data.user.email);
+
+      if (!user) {
+        await fetchAPI("/(api)/user", {
+          method: "POST",
+          body: JSON.stringify({
+            fullname: response.data.user.name,
+            firstname: response.data.user.givenName || response.data.user.name.split(" ")[0],
+            lastname: response.data.user.familyName || response.data.user.name.split(" ")[1] || null,
+            email: response.data.user.email,
+            photo: response.data.user.photo,
+            user_id: response.data.user.id,
+          }),
+        });
+      }
+
+      const { idToken } = response.data;
       authenticate(idToken, (result, error) => {
         if (result) {
           console.log("authentication successful");
+          Alert.alert(
+            "Success",
+            "You have successfully signed in with Google and authenticated with Okto"
+          );
+          router.replace("/(root)/userFlashcardForm");
         }
         if (error) {
           console.error("authentication error:", error);

@@ -52,9 +52,12 @@ const SignUp = () => {
         await fetchAPI("/(api)/user", {
           method: "POST",
           body: JSON.stringify({
-            name: form.name,
+            fullname: form.name,
+            firstname: form.name.split(" ")[0],
+            lastname: form.name.split(" ")[1] || null,
+            photo: null,
             email: form.email,
-            clerkId: completeSignUp.createdUserId,
+            user_id: completeSignUp.createdUserId,
           }),
         });
         await setActive({ session: completeSignUp.createdSessionId });
