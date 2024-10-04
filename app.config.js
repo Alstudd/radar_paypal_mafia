@@ -22,7 +22,7 @@ export default {
           "backgroundColor": "#ffffff"
         },
         "package": "com.alstudd.radar_paypal_mafia",
-        "googleServicesFile": process.env.GOOGLE_SERVICES_JSON
+        "googleServicesFile": process.env.GOOGLE_SERVICES_FILE
       },
       "web": {
         "bundler": "metro",
