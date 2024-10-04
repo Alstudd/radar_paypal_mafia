@@ -110,6 +110,8 @@ const UserFlashcardForm = () => {
   const { signOut } = useAuth();
   const { logOut } = useOkto() as OktoContextType;
 
+  GoogleSignin.configure({});
+
   const handleSignOut = async () => {
     try {
       await GoogleSignin.revokeAccess();

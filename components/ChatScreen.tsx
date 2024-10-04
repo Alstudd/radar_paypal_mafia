@@ -46,8 +46,6 @@ const ChatScreen = () => {
     }).start();
   }, []);
 
-  console.log(data.login);
-
   return (
     <SafeAreaView className="bg-[#1e88e5]">
       <LinearGradient
@@ -92,7 +90,7 @@ const ChatScreen = () => {
             </View>
             <ScrollView>
               {loading ? (
-                <ActivityIndicator size="large" color="#f20042" />
+                <ActivityIndicator size="large" color="#0286FF" />
               ) : (
                 <Animated.View style={styles.list}>
                   {data.map((item: any, index: any) => (

@@ -22,7 +22,9 @@ export const APP_IDENTITY = {
 const home = () => {
   const { user } = useUser();
   const { signOut } = useAuth();
-  const { logOut } = useOkto() as OktoContextType;
+  const { logOut, showWidgetSheet, closeBottomSheet } = useOkto() as OktoContextType;
+
+  GoogleSignin.configure({});
 
   const handleSignOut = async () => {
     try {
@@ -39,19 +41,23 @@ const home = () => {
     }
   };
 
-  const connect = async () => {
-    const authorizationResult = await transact(
-      async (wallet: Web3MobileWallet) => {
-        const authorizationResult = await wallet.authorize({
-          chain: "solana:devnet",
-          identity: APP_IDENTITY,
-        });
-        return authorizationResult;
-      }
-    );
+  // const connect = async () => {
+  //   const authorizationResult = await transact(
+  //     async (wallet: Web3MobileWallet) => {
+  //       const authorizationResult = await wallet.authorize({
+  //         chain: "solana:devnet",
+  //         identity: APP_IDENTITY,
+  //       });
+  //       return authorizationResult;
+  //     }
+  //   );
 
-    console.log("Connected to: " + authorizationResult.accounts[0].address);
-  };
+  //   console.log("Connected to: " + authorizationResult.accounts[0].address);
+  // };
+
+  const connect = () => {
+    showWidgetSheet()
+  }
 
   return (
     <SafeAreaView>
