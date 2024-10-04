@@ -21,7 +21,8 @@
         "foregroundImage": "./assets/images/check.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.alstudd.radar_paypal_mafia"
+      "package": "com.alstudd.radar_paypal_mafia",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "bundler": "metro",
