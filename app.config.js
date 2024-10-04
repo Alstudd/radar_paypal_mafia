@@ -22,7 +22,7 @@ export default {
           "backgroundColor": "#ffffff"
         },
         "package": "com.alstudd.radar_paypal_mafia",
-        "googleServicesFile": process.env.GOOGLE_SERVICES_FILE
+        "googleServicesFile": process.env.GOOGLE_SERVICES_JSON
       },
       "web": {
         "bundler": "metro",
@@ -35,6 +35,9 @@ export default {
           {
             "origin": "https://radar_paypal_mafia.dev/"
           }
+        ],
+        [
+          "@react-native-google-signin/google-signin"
         ]
       ],
       "experiments": {

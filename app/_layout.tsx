@@ -46,7 +46,7 @@ export default function RootLayout() {
 
   return (
     <OktoProvider
-      apiKey={`${process.env.OKTO_CLIENT_API_KEY}`}
+      apiKey="5fd92f3c-9b47-4061-ae27-46eebda47115"
       buildType={BuildType.SANDBOX}
     >
       <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>

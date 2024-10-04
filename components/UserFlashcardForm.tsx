@@ -33,6 +33,7 @@ import * as DocumentPicker from "expo-document-picker";
 import { WebView } from "react-native-webview";
 import { useColorScheme } from "nativewind";
 import { StatusBar } from "expo-status-bar";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 const steps = [
   { id: 1, title: "Basic Details" },
@@ -108,7 +109,9 @@ const UserFlashcardForm = () => {
   const { signOut } = useAuth();
 
   const handleSignOut = () => {
-    signOut();
+    GoogleSignin.revokeAccess();
+    GoogleSignin.signOut();
+    // signOut();
     router.replace("/(auth)/sign-in");
   };
 

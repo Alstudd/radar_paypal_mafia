@@ -8,8 +8,7 @@ import { googleOAuth } from "@/lib/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { useOkto, type OktoContextType } from "okto-sdk-react-native";
 
-const webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID!;
-
+const webClientId = "328551301503-nq398rv0ff8nrubpu8l71avde3c0h78e.apps.googleusercontent.com";
 
 const OAuth = () => {
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
@@ -24,32 +23,30 @@ const OAuth = () => {
     Alert.alert(result.success ? "Success" : "Error", result.message);
   };
 
-  
   const { authenticate } = useOkto() as OktoContextType;
   async function handleGoogleSignInUsingOkto() {
     try {
-      const configured = GoogleSignin.configure({
-        // Update scopes as needed in your app
+      GoogleSignin.configure({
         scopes: ["email", "profile"],
-        webClientId
-    });
-    console.log(configured);
+        webClientId,
+      });
       await GoogleSignin.hasPlayServices();
       const response: any = await GoogleSignin.signIn();
+      console.log(response);
       const { idToken } = response;
       authenticate(idToken, (result, error) => {
-          if (result) {
-              console.log('authentication successful');
-          }
-          if (error) {
-              console.error('authentication error:', error);
-          }
+        if (result) {
+          console.log("authentication successful");
+        }
+        if (error) {
+          console.error("authentication error:", error);
+        }
       });
-  } catch (error) {
+    } catch (error) {
+      console.log(error);
       console.log("Something went wrong. Please try again");
+    }
   }
-  }
-  
 
   return (
     <View>

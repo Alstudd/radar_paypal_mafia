@@ -10,6 +10,7 @@ import {
 } from "@solana-mobile/mobile-wallet-adapter-protocol-web3js";
 import CustomButton from "@/components/CustomButton";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 export const APP_IDENTITY = {
   name: "Radar - Paypal Mafia",
@@ -22,7 +23,9 @@ const home = () => {
   const { signOut } = useAuth();
 
   const handleSignOut = () => {
-    signOut();
+    GoogleSignin.revokeAccess();
+    GoogleSignin.signOut();
+    // signOut();
     router.replace("/(auth)/sign-in");
   };
 
