@@ -341,7 +341,7 @@ const UserFlashcardForm = () => {
                     outputRange: [0, 250],
                   }),
                   height: "100%",
-                  backgroundColor: "#0286FF",
+                  backgroundColor: "#536dfe",
                 }}
               />
             </View>
@@ -451,7 +451,7 @@ const UserFlashcardForm = () => {
               </Text>
               <TouchableOpacity
                 onPress={() => setOpen(true)}
-                className={`flex flex-row justify-start items-center relative rounded-full border border-neutral-100 focus:border-primary-500 ${
+                className={`flex flex-row justify-start items-center relative rounded-full border border-neutral-100 focus:border-[#536dfe] ${
                   colorScheme === "dark" ? "bg-[#02050A]" : "bg-neutral-100"
                 }`}
               >
@@ -460,7 +460,7 @@ const UserFlashcardForm = () => {
                     name="edit-calendar"
                     size={24}
                     className=""
-                    color={"#0286FF"}
+                    color={"#536dfe"}
                   />
                 </View>
                 <View className="rounded-full p-4 font-JakartaSemiBold text-[15px] flex-1">
@@ -500,7 +500,7 @@ const UserFlashcardForm = () => {
                   <Icon
                     name="person-circle-outline"
                     size={100}
-                    color="#0286FF"
+                    color="#536dfe"
                   />
                 )}
               </View>
@@ -566,7 +566,7 @@ const UserFlashcardForm = () => {
                           <MaterialIcons
                             name="add-circle"
                             size={28}
-                            color="#0286FF"
+                            color="#536dfe"
                           />
                         </TouchableOpacity>
                         <TouchableOpacity className="pt-0.5" onPress={() => removeProject(index)}>
@@ -769,7 +769,7 @@ const UserFlashcardForm = () => {
                   //   style={styles.pdfViewer}
                   // />
                   <View style={styles.pdfContainer}>
-                    <AntDesign name="pdffile1" size={100} color="#0286FF" />
+                    <AntDesign name="pdffile1" size={100} color="#536dfe" />
                     <Text
                       className="text-center font-JakartaBold"
                       style={styles.pdfName}
@@ -778,7 +778,7 @@ const UserFlashcardForm = () => {
                     </Text>
                   </View>
                 ) : (
-                  <Icon name="document-outline" size={100} color="#0286FF" />
+                  <Icon name="document-outline" size={100} color="#536dfe" />
                 )}
               </View>
 
@@ -967,11 +967,11 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 75,
-    borderColor: "#0286FF",
+    borderColor: "#536dfe",
     borderWidth: 2,
   },
   uploadButton: {
-    backgroundColor: "#0286FF",
+    backgroundColor: "#536dfe",
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 10,
@@ -1000,7 +1000,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     fontWeight: "500",
-    color: "#0286FF",
+    color: "#536dfe",
   },
 });
 

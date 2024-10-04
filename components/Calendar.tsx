@@ -53,7 +53,7 @@ export default function Calendar({
               <Icon
                 name="arrow-up-circle-outline"
                 size={28}
-                color={"#0286FF"}
+                color={"#4646fc"}
               />
             </TouchableOpacity>
             <Text
@@ -70,7 +70,7 @@ export default function Calendar({
               <Icon
                 name="arrow-down-circle-outline"
                 size={28}
-                color={"#0286FF"}
+                color={"#4646fc"}
               />
             </TouchableOpacity>
           </View>
@@ -83,7 +83,7 @@ export default function Calendar({
               <Icon
                 name="arrow-up-circle-outline"
                 size={28}
-                color={"#0286FF"}
+                color={"#4646fc"}
               />
             </TouchableOpacity>
             <Text
@@ -100,7 +100,7 @@ export default function Calendar({
               <Icon
                 name="arrow-down-circle-outline"
                 size={28}
-                color={"#0286FF"}
+                color={"#4646fc"}
               />
             </TouchableOpacity>
           </View>
@@ -174,7 +174,7 @@ export default function Calendar({
           <Icon
             name="calendar-outline"
             size={40}
-            color={"#0286FF"}
+            color={"#4646fc"}
           />
           <Text
             className={`font-JakartaBold text-[18px] ${
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
   selectedDate: {
     width: 40,
     height: 40,
-    backgroundColor: "#0286FF",
+    backgroundColor: "#4646fc",
     color: "white",
     borderRadius: 20,
     padding: 10,

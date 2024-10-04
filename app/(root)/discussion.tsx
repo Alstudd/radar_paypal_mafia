@@ -13,6 +13,7 @@ import Sent from "@/components/chat/Sent";
 import Data from "@/assets/data/Data.json";
 import Input from "@/components/chat/Input";
 import { router, useLocalSearchParams } from "expo-router";
+import { useColorScheme } from "nativewind";
 
 const Discussion = () => {
   const { itemName, itemPic }: { itemName: string; itemPic: string } =
@@ -33,18 +34,20 @@ const Discussion = () => {
   }
   console.log(Data);
 
+  const { colorScheme } = useColorScheme();
+
   return (
     <GestureHandlerRootView>
       <LinearGradient
-        colors={["#42a5f5", "#42a5f5", "#1565c0"]}
+        colors={["#4646fc", "#4646fc", "#4646fc"]}
         style={styles.container}
       >
-        <View style={styles.main}>
-          <View style={styles.headerContainer}>
+        <View className={`${colorScheme === 'dark' ? 'bg-[#02050A]' : 'bg-white'}`} style={styles.main}>
+          <View className="mb-2" style={styles.headerContainer}>
             <TouchableOpacity onPress={() => router.back()}>
-              <Icon name="left" color="#000119" size={24} />
+              <Icon name="left" color={colorScheme === 'dark' ? '#fff' : '#02050A'} size={24} />
             </TouchableOpacity>
-            <Text className="font-JakartaBold" style={styles.username}>
+            <Text className={`font-JakartaBold ${colorScheme === 'dark' ? 'text-white' : 'text-[#02050A]'}`} style={styles.username}>
               {itemName}
             </Text>
             <Image source={{ uri: itemPic }} style={styles.avatar} />
@@ -80,7 +83,6 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   main: {
-    backgroundColor: "#FFF",
     height: "88%",
     paddingHorizontal: 20,
     borderBottomLeftRadius: 35,
@@ -92,7 +94,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   username: {
-    color: "#000119",
     fontSize: 20,
     flex: 1,
     textAlign: "center",

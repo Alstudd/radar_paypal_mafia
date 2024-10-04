@@ -6,6 +6,7 @@ import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import UserFlashcard from "@/components/UserFlashcard";
 import { useSelectedMode } from "@/contexts/SelectedModeContext";
 import RecruiterFlashcardWrapper from "@/components/recruiter/RecruiterFlashcardWrapper";
+import { useColorScheme } from "nativewind";
 // import users from "@/assets/data/users";
 
 interface User {
@@ -22,6 +23,7 @@ interface User {
 
 const Search = () => {
   const { selectedMode } = useSelectedMode();
+  const { colorScheme } = useColorScheme();
 
   const users: User[] = [
     {
@@ -259,7 +261,7 @@ const Search = () => {
   };
 
   return (
-    <>
+    <View className={`flex-1 ${colorScheme === 'dark' ? 'bg-[#02050A]' : 'bg-white'}`}>
       {selectedMode === "User" && (
         <View style={styles.pageContainer}>
           <FlashcardWrapper
@@ -273,7 +275,7 @@ const Search = () => {
         </View>
       )}
       {selectedMode === "Recruiter" && <RecruiterFlashcardWrapper />}
-    </>
+    </View>
   );
 };
 

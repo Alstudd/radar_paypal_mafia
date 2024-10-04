@@ -4,6 +4,7 @@ import { View, Image, ImageSourcePropType, StyleSheet } from "react-native";
 import TopNav from "@/components/TopNav";
 import { icons } from "@/constants";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useColorScheme } from "nativewind";
 
 const TabIcon = ({
   source,
@@ -19,7 +20,7 @@ const TabIcon = ({
   >
     <View
       className={`rounded-full w-11 h-11 items-center justify-center ${
-        focused ? "bg-[#1e88e5]" : ""
+        focused ? "bg-[#4646fc]" : ""
       }`}
     >
       <Image
@@ -35,6 +36,7 @@ const TabIcon = ({
 export default function Layout() {
   const segments = useSegments<any>();
   const isChatScreen = segments.includes("chat");
+  const { colorScheme } = useColorScheme();
 
   return (
     <>
@@ -63,6 +65,8 @@ export default function Layout() {
             elevation: 1,
             height: 60,
             position: "absolute",
+            borderColor: colorScheme === 'dark' ? '#4646fc' : 'white',
+            borderWidth: colorScheme === 'dark' ? 6 : 0,
           },
         }}
       >

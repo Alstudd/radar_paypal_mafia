@@ -15,6 +15,7 @@ import Profiles from "@/components/chat/Profiles";
 import Messages from "@/components/chat/Messages";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useColorScheme } from "nativewind";
 
 const ChatScreen = () => {
   const URL = `https://api.github.com/users`;
@@ -23,6 +24,8 @@ const ChatScreen = () => {
 
   const pan = useRef(new Animated.ValueXY()).current;
   const list = useRef(new Animated.ValueXY()).current;
+
+  const { colorScheme } = useColorScheme();
 
   useEffect(function () {
     const getData = async () => {
@@ -47,10 +50,10 @@ const ChatScreen = () => {
   }, []);
 
   return (
-    <SafeAreaView className="bg-[#1e88e5]">
+    <SafeAreaView className="bg-[#3232ba]">
       <LinearGradient
         className="mt-20"
-        colors={["#1e88e5", "#f20042", "#EEEEEE"]}
+        colors={["#3232ba", "#f20042", "#EEEEEE"]}
         style={styles.gradient}
       >
         <View>
@@ -80,17 +83,17 @@ const ChatScreen = () => {
             )}
           </ScrollView>
         </View>
-        <View style={styles.ops}>
+        <View className={`${colorScheme === 'dark' ? 'bg-[#02050A]' : 'bg-white'}`} style={styles.ops}>
           <View className="h-[500px]">
-            <View style={styles.col}>
-              <Text className="font-JakartaExtraBold" style={styles.day}>
+            <View className="mb-2" style={styles.col}>
+              <Text className={`font-JakartaExtraBold ${colorScheme === 'dark' ? 'text-white' : 'text-[#02050A]'}`} style={styles.day}>
                 Chats
               </Text>
-              <Entypo name="dots-three-horizontal" color="#000119" size={30} />
+              <Entypo name="dots-three-horizontal" color={colorScheme === "dark" ? "#fff" : "#02050A"} size={30} />
             </View>
             <ScrollView>
               {loading ? (
-                <ActivityIndicator size="large" color="#0286FF" />
+                <ActivityIndicator size="large" color="#4646fc" />
               ) : (
                 <Animated.View style={styles.list}>
                   {data.map((item: any, index: any) => (
@@ -151,7 +154,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
     height: "100%",
-    backgroundColor: "white",
     marginHorizontal: -20,
     marginTop: 20,
   },
@@ -162,7 +164,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   day: {
-    color: "#000119",
     flex: 1,
     fontSize: 20,
   },

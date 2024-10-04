@@ -46,7 +46,7 @@ const InputField = ({
             </Text>
           )}
           <View
-            className={`flex flex-row justify-start items-center relative rounded-full border border-neutral-100 focus:border-primary-500 ${containerStyle} ${
+            className={`flex flex-row justify-start items-center relative rounded-full border border-neutral-100 focus:border-[#536dfe] ${containerStyle} ${
               colorScheme === "dark" ? "bg-[#02050A]" : "bg-neutral-100"
             }`}
           >
@@ -56,7 +56,7 @@ const InputField = ({
                   name={icon}
                   size={24}
                   className={`${iconStyle}`}
-                  color={"#0286FF"}
+                  color={"#536dfe"}
                 />
               </View>
             ) : (
@@ -68,7 +68,7 @@ const InputField = ({
               placeholderTextColor={
                 colorScheme === "dark" ? "#e0e0e0" : "#616161"
               }
-              cursorColor={"#0286FF"}
+              cursorColor={"#536dfe"}
               className={`rounded-full p-4 font-JakartaSemiBold text-[15px] flex-1 ${inputStyle} ${
                 colorScheme === "dark" ? "text-white" : "text-[#02050A]"
               }`}
@@ -81,7 +81,7 @@ const InputField = ({
                   name={rightIcon}
                   size={40}
                   className={`${iconStyle}`}
-                  color={"#0286FF"}
+                  color={"#536dfe"}
                 />
               </TouchableOpacity>
             )}

@@ -10,6 +10,7 @@ import {
 import React, { useState } from "react";
 import { fetchAPI } from "@/lib/fetch";
 import { icons } from "@/constants";
+import { useColorScheme } from "nativewind";
 
 interface UserData {
   fullname: string;
@@ -21,6 +22,7 @@ interface UserData {
 }
 
 const Profile = () => {
+  const { colorScheme } = useColorScheme();
   const [userDetails, setUserDetails] = useState<User | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -48,18 +50,18 @@ const Profile = () => {
   }, [userDetails]);
 
   return (
-    <SafeAreaView>
+    <SafeAreaView className={`${colorScheme === 'dark' ? 'bg-[#02050A]' : 'bg-white'} h-full`}>
       <View className="mt-20">
         {loading ? (
           <View className="flex items-center justify-center h-full">
-            <ActivityIndicator size="large" color="#0286FF" />
+            <ActivityIndicator size="large" color="#4646fc" />
           </View>
         ) : (
           <ScrollView
             className="px-5"
             contentContainerStyle={{ paddingBottom: 120 }}
           >
-            <Text className="text-2xl font-JakartaBold my-5">My profile</Text>
+            <Text className={`text-2xl font-JakartaBold my-5 ${colorScheme === 'dark' ? 'text-white' : 'text-[#02050A]'}`}>My profile</Text>
 
             <View className="flex items-center justify-center my-5">
               {userData?.photo ? (
@@ -79,7 +81,7 @@ const Profile = () => {
               )}
             </View>
 
-            <View className="flex flex-col items-start justify-center bg-white rounded-lg shadow-sm shadow-neutral-300 px-5 py-3">
+            <View className={`flex flex-col items-start justify-center ${colorScheme === 'dark' ? 'shadow-none' : 'shadow-sm shadow-neutral-300 bg-white'} rounded-lg px-5 py-3`}>
               <View className="flex flex-col items-start justify-start w-full">
                 <InputField
                   label="First name"
@@ -105,13 +107,13 @@ const Profile = () => {
                   editable={false}
                 />
 
-                <InputField
+                {/* <InputField
                   label="Phone"
                   placeholder={"Not Found"}
                   containerStyle="w-full"
                   inputStyle="p-3.5"
                   editable={false}
-                />
+                /> */}
               </View>
             </View>
           </ScrollView>

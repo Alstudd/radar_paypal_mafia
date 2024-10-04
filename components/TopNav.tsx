@@ -2,21 +2,58 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useSelectedMode } from "@/contexts/SelectedModeContext";
+import ThemeSwitcher from "./ThemeSwitcher";
+import Icon from "@expo/vector-icons/Ionicons";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import { OktoContextType, useOkto } from "okto-sdk-react-native";
+import { router } from "expo-router";
 
 const TopNav = () => {
   const { selectedMode, setSelectedMode } = useSelectedMode();
+  const { logOut } = useOkto() as OktoContextType;
+
+  GoogleSignin.configure({});
+
+  const handleSignOut = async () => {
+    try {
+      await GoogleSignin.revokeAccess();
+      await GoogleSignin.signOut();
+      console.log("Google sign-out successful");
+
+      await logOut();
+      console.log("Okto sign-out successful");
+
+      router.replace("/(auth)/sign-in");
+    } catch (error) {
+      console.error("Error during sign-out:", error);
+    }
+  };
 
   return (
-    <View style={styles.container}>
-      {["User", "Recruiter", "Investor"].map((mode) => (
-        <TouchableOpacity
-          key={mode}
-          style={[styles.button, selectedMode === mode && styles.activeButton]}
-          onPress={() => setSelectedMode(mode)}
-        >
-          <Text style={styles.buttonText}>{mode}</Text>
-        </TouchableOpacity>
-      ))}
+    <View
+      style={styles.mainContainer}
+      className="flex flex-row justify-between items-center w-full px-3"
+    >
+      <View className="flex items-center justify-center">
+        <ThemeSwitcher />
+      </View>
+      <View style={styles.container}>
+        {["User", "Recruiter", "Investor"].map((mode) => (
+          <TouchableOpacity
+            key={mode}
+            style={[
+              styles.button,
+              selectedMode === mode && styles.activeButton,
+            ]}
+            onPress={() => setSelectedMode(mode)}
+          >
+            <Text style={styles.buttonText}>{mode}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+      <TouchableOpacity onPress={handleSignOut} style={styles.logoutButton}>
+        <Icon name="log-out-outline" size={24} color="#fff" />
+      </TouchableOpacity>
     </View>
   );
 };
@@ -28,27 +65,33 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#333333",
     paddingHorizontal: 10,
-    paddingVertical: 10,
+    paddingVertical: 0,
     borderRadius: 50,
     overflow: "hidden",
-    height: 55,
+    height: 50,
+  },
+  mainContainer: {
     position: "absolute",
     top: 40,
     zIndex: 99,
     elevation: 1,
-    marginHorizontal: 20,
   },
   button: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
     borderRadius: 25,
   },
   activeButton: {
-    backgroundColor: "#1e88e5",
+    backgroundColor: "#4646fc",
   },
   buttonText: {
     color: "white",
     fontSize: 16,
+  },
+  logoutButton: {
+    padding: 10,
+    backgroundColor: "#FF5E5E",
+    borderRadius: 30,
   },
 });
 

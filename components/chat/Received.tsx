@@ -8,7 +8,7 @@ interface ReceivedProps {
 
 const Received = ({ image, message }: ReceivedProps) => {
   return (
-    <View style={styles.container}>
+    <View className="bg-white" style={styles.container}>
       <Image source={{ uri: image }} style={styles.img} />
       <View>
         <Text className="font-JakartaBold" style={styles.message}>
@@ -31,8 +31,15 @@ const styles = StyleSheet.create({
   },
   container: {
     flexDirection: "row",
-    marginTop: 20,
-    width: 250,
+    marginVertical: 15,
+    maxWidth: 250,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderBottomRightRadius: 25,
+    borderTopRightRadius: 25,
+    borderBottomLeftRadius: 25,
   },
   img: {
     width: 40,

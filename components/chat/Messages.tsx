@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { useColorScheme } from "nativewind";
 
 const randomTime = () => {
   const hrs = Math.round(Math.random() * 12);
@@ -19,6 +20,7 @@ interface MessagesProps {
 }
 
 const Messages = ({ username, uri, count, onPress }: MessagesProps) => {
+  const { colorScheme } = useColorScheme();
   return (
     <TouchableOpacity onPress={onPress} style={styles.container}>
       {count > 0 ? (
@@ -34,14 +36,14 @@ const Messages = ({ username, uri, count, onPress }: MessagesProps) => {
 
       <Image source={{ uri: uri }} style={styles.image} />
       <View style={{ marginLeft: 10 }}>
-        <Text className="font-JakartaBold" style={styles.username}>
+        <Text className={`font-JakartaBold ${colorScheme === 'dark' ? 'text-white' : 'text-[#02050A]'}`}>
           {username}
         </Text>
         <Text className="font-JakartaSemiBold" style={styles.text}>
           Hello, How are you
         </Text>
       </View>
-      <Text className="font-JakartaSemiBold" style={styles.duration}>
+      <Text className={`font-JakartaSemiBold ${colorScheme === 'dark' ? 'text-white' : 'text-[#02050A]'}`} style={styles.duration}>
         {randomTime()}
       </Text>
     </TouchableOpacity>
@@ -54,7 +56,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingHorizontal: 20,
     alignItems: "center",
-    marginTop: 30,
+    marginTop: 27,
   },
   gradientStyle: {
     height: 20,
@@ -79,13 +81,9 @@ const styles = StyleSheet.create({
     fontSize: 11,
   },
   duration: {
-    color: "#000119",
     fontSize: 12,
     flex: 1,
     marginLeft: 280,
     position: "absolute", // doubt
-  },
-  username: {
-    color: "#000119",
   },
 });

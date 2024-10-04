@@ -42,7 +42,7 @@ const InputArea = ({
             </Text>
           )}
           <View
-            className={`flex flex-row justify-start rounded-xl border border-neutral-100 focus:border-primary-500 ${containerStyle} ${containerStyle} ${
+            className={`flex flex-row justify-start rounded-xl border border-neutral-100 focus:border-[#536dfe] ${containerStyle} ${containerStyle} ${
               colorScheme === "dark" ? "bg-[#02050A]" : "bg-neutral-100"
             }`}
           >
@@ -52,7 +52,7 @@ const InputArea = ({
                   name={icon}
                   size={24}
                   className={`${iconStyle}`}
-                  color={"#0286FF"}
+                  color={"#536dfe"}
                 />
               </View>
             ) : (
@@ -64,7 +64,7 @@ const InputArea = ({
               placeholderTextColor={
                 colorScheme === "dark" ? "#e0e0e0" : "#616161"
               }
-              cursorColor={"#0286FF"}
+              cursorColor={"#536dfe"}
               className={`p-4 font-JakartaSemiBold text-[15px] flex-1 ${inputStyle} ${
                 colorScheme === "dark" ? "text-white" : "text-[#02050A]"
               }`}

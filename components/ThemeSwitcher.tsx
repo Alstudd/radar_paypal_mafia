@@ -29,8 +29,7 @@ const ThemeSwitcher = () => {
     const backgroundColor = interpolateColor(
       progress.value,
       [0, 1],
-      ["#FFD700", "#1E1E1E"] // Light (sunny) to Dark (dark gray) transition
-      //   ["#0286FF", "#1E1E1E"]
+      ["#4646fc", "#1E1E1E"] // Light (sunny) to Dark (dark gray) transition
     );
     return {
       backgroundColor,
@@ -56,9 +55,9 @@ const ThemeSwitcher = () => {
         {/* Sun/Moon Icon Switch */}
         <Animated.View style={[styles.switch, animatedSwitchStyle]}>
           {colorScheme === "dark" ? (
-            <Ionicons name="moon" size={20} color="#000" />
+            <Ionicons name="moon" size={20} color="#1E1E1E" />
           ) : (
-            <Ionicons name="sunny" size={20} color="#FFD700" />
+            <Ionicons name="sunny" size={20} color="#4646fc" />
           )}
         </Animated.View>
       </Animated.View>

@@ -9,7 +9,7 @@ interface SentProps {
 const Sent = ({ message }: SentProps) => {
   return (
     <View style={styles.container}>
-      <LinearGradient colors={["#1e88e5", "#3f51b5"]} style={styles.gradient}>
+      <LinearGradient colors={["#4646fc", "#3f51b5"]} style={styles.gradient}>
         <Text className="font-JakartaBold" style={styles.text}>{message}</Text>
       </LinearGradient>
       <Text className="font-JakartaSemiBold" style={styles.duration}>12:34 AM</Text>

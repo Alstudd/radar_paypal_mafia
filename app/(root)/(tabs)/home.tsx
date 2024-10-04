@@ -12,6 +12,7 @@ import CustomButton from "@/components/CustomButton";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { OktoContextType, useOkto } from "okto-sdk-react-native";
+import { useColorScheme } from "nativewind";
 
 export const APP_IDENTITY = {
   name: "Radar - Paypal Mafia",
@@ -20,6 +21,7 @@ export const APP_IDENTITY = {
 };
 
 const home = () => {
+  const { colorScheme } = useColorScheme();
   const { user } = useUser();
   const { signOut } = useAuth();
   const { logOut, showWidgetSheet, closeBottomSheet } = useOkto() as OktoContextType;
@@ -56,13 +58,13 @@ const home = () => {
   // };
 
   const connect = () => {
-    showWidgetSheet()
+    showWidgetSheet();
   }
 
   return (
-    <SafeAreaView>
+    <SafeAreaView className={`${colorScheme === 'dark' ? 'bg-[#02050A]' : 'bg-white'} h-full`}>
       <View className="mx-5 mt-20">
-        <View className="flex flex-row items-center justify-between my-5">
+        {/* <View className="flex flex-row items-center justify-between my-5">
           <Text className="text-2xl font-JakartaBold">
             Welcome {user?.firstName}👋
           </Text>
@@ -72,7 +74,7 @@ const home = () => {
           >
             <Image source={icons.out} className="w-4 h-4" />
           </TouchableOpacity>
-        </View>
+        </View> */}
         <CustomButton
           title="Connect Wallet"
           onPress={connect}
