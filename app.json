@@ -22,7 +22,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.alstudd.radar_paypal_mafia",
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./app/google-services.json"
     },
     "web": {
       "bundler": "metro",
