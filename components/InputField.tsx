@@ -12,6 +12,7 @@ import {
 
 import { InputFieldProps } from "@/types/type";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useColorScheme } from "nativewind";
 
 const InputField = ({
   label,
@@ -28,6 +29,7 @@ const InputField = ({
   righButtonOnPress,
   ...props
 }: InputFieldProps) => {
+  const { colorScheme } = useColorScheme();
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -35,12 +37,18 @@ const InputField = ({
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View className="my-2 w-full">
           {label && (
-            <Text className={`text-lg font-JakartaSemiBold mb-3 ${labelStyle}`}>
+            <Text
+              className={`text-lg font-JakartaSemiBold mb-3 ${labelStyle} ${
+                colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+              }`}
+            >
               {label}
             </Text>
           )}
           <View
-            className={`flex flex-row justify-start items-center relative bg-neutral-100 rounded-full border border-neutral-100 focus:border-primary-500  ${containerStyle}`}
+            className={`flex flex-row justify-start items-center relative rounded-full border border-neutral-100 focus:border-primary-500 ${containerStyle} ${
+              colorScheme === "dark" ? "bg-[#02050A]" : "bg-neutral-100"
+            }`}
           >
             {useExpoVectorIcons ? (
               <View className="ml-4 mt-[3px]">
@@ -57,8 +65,13 @@ const InputField = ({
               )
             )}
             <TextInput
+              placeholderTextColor={
+                colorScheme === "dark" ? "#e0e0e0" : "#616161"
+              }
               cursorColor={"#0286FF"}
-              className={`rounded-full p-4 font-JakartaSemiBold text-[15px] flex-1 ${inputStyle} text-leff`}
+              className={`rounded-full p-4 font-JakartaSemiBold text-[15px] flex-1 ${inputStyle} ${
+                colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+              }`}
               secureTextEntry={secureTextEntry}
               {...props}
             />

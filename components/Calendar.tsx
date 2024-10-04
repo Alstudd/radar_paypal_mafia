@@ -9,6 +9,8 @@ import {
 import dayjs from "dayjs";
 import { generateDate, months } from "@/utils/calendar";
 import Icon from "@expo/vector-icons/Ionicons";
+import { useColorScheme } from "nativewind";
+import ThemeSwitcher from "./ThemeSwitcher";
 
 export default function Calendar({
   setOpen,
@@ -34,8 +36,13 @@ export default function Calendar({
     setAge(calculateAge(selectDate));
   }, [selectDate]);
 
+  const { colorScheme } = useColorScheme();
+
   return (
-    <View className="bg-white" style={styles.container}>
+    <View
+      className={`${colorScheme === "dark" ? "bg-[#02050A]" : "bg-white"}`}
+      style={styles.container}
+    >
       <View style={styles.calendarWrapper}>
         <View style={styles.navigationButtons}>
           <View style={styles.yearNavigation}>
@@ -43,16 +50,28 @@ export default function Calendar({
               onPress={() => setToday(today.year(today.year() + 1))}
               style={styles.navButtonContainer}
             >
-              <Icon name="arrow-up-circle" size={28} color="#0286FF" />
+              <Icon
+                name="arrow-up-circle-outline"
+                size={28}
+                color={"#0286FF"}
+              />
             </TouchableOpacity>
-            <Text className="font-JakartaSemiBold text-[16px] text-[#000]">
+            <Text
+              className={`font-JakartaSemiBold text-[16px] text-[#000] ${
+                colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+              }`}
+            >
               Year
             </Text>
             <TouchableOpacity
               onPress={() => setToday(today.year(today.year() - 1))}
               style={styles.navButtonContainer}
             >
-              <Icon name="arrow-down-circle" size={28} color="#0286FF" />
+              <Icon
+                name="arrow-down-circle-outline"
+                size={28}
+                color={"#0286FF"}
+              />
             </TouchableOpacity>
           </View>
 
@@ -61,28 +80,48 @@ export default function Calendar({
               onPress={() => setToday(today.month(today.month() + 1))}
               style={styles.navButtonContainer}
             >
-              <Icon name="arrow-up-circle" size={28} color="#0286FF" />
+              <Icon
+                name="arrow-up-circle-outline"
+                size={28}
+                color={"#0286FF"}
+              />
             </TouchableOpacity>
-            <Text className="font-JakartaSemiBold text-[16px] text-[#000]">
+            <Text
+              className={`font-JakartaSemiBold text-[16px] text-[#000] ${
+                colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+              }`}
+            >
               Month
             </Text>
             <TouchableOpacity
               onPress={() => setToday(today.month(today.month() - 1))}
               style={styles.navButtonContainer}
             >
-              <Icon name="arrow-down-circle" size={28} color="#0286FF" />
+              <Icon
+                name="arrow-down-circle-outline"
+                size={28}
+                color={"#0286FF"}
+              />
             </TouchableOpacity>
           </View>
         </View>
         <View className="my-2 mx-6">
-          <Text className="font-JakartaBold text-[18px]">
+          <Text
+            className={`font-JakartaBold text-[18px] ${
+              colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+            }`}
+          >
             {months[today.month()]}, {today.year()}
           </Text>
         </View>
 
         <View style={styles.dayLabels}>
           {days.map((day, index) => (
-            <Text key={index} style={styles.dayLabel}>
+            <Text
+              key={index}
+              style={styles.dayLabel}
+              className="font-JakartaMedium"
+            >
               {day}
             </Text>
           ))}
@@ -95,8 +134,12 @@ export default function Calendar({
                 key={index}
                 onPress={() => setSelectDate(date)}
                 style={styles.dateWrapper}
+                className="-pb-1"
               >
                 <Text
+                  className={`${
+                    colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+                  } font-JakartaMedium`}
                   style={[
                     styles.dateText,
                     !currentMonth && styles.inactiveDate,
@@ -120,17 +163,7 @@ export default function Calendar({
           Age: {calculateAge(selectDate)} years
         </Text>
       </View>
-      <View className="absolute top-0 right-9">
-        <TouchableOpacity
-          onPress={() => {
-            setDate(selectDate.toDate());
-            setOpen(false);
-          }}
-        >
-          <Icon name="close-circle" size={50} color="#FF5E5E" />
-        </TouchableOpacity>
-      </View>
-      <View className="absolute top-1 left-9">
+      <View className="absolute top-0 right-0 left-0 flex flex-row justify-between items-center mx-8 mt-5">
         <TouchableOpacity
           className="flex flex-row items-center gap-2"
           onPress={() => {
@@ -138,8 +171,36 @@ export default function Calendar({
             setOpen(false);
           }}
         >
-          <Icon name="calendar" size={40} color="#0286FF" />
-          <Text className="font-JakartaBold text-[20px]">Date Of Birth</Text>
+          <Icon
+            name="calendar-outline"
+            size={40}
+            color={"#0286FF"}
+          />
+          <Text
+            className={`font-JakartaBold text-[18px] ${
+              colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+            }`}
+          >
+            Date Of Birth
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            setDate(selectDate.toDate());
+            setOpen(false);
+          }}
+          className="flex flex-row gap-5 items-center"
+        >
+          <View>
+            <ThemeSwitcher />
+          </View>
+          <View className="bg-[#FF5E5E] rounded-[30px] p-[2px]">
+          <Icon
+            name="close-sharp"
+            size={36}
+            color={"#fff"}
+          />
+          </View>
         </TouchableOpacity>
       </View>
     </View>
@@ -199,13 +260,14 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   dateText: {
-    fontSize: 16,
+    fontSize: 14,
   },
   inactiveDate: {
     color: "lightgray",
   },
   selectedDate: {
     width: 40,
+    height: 40,
     backgroundColor: "#0286FF",
     color: "white",
     borderRadius: 20,

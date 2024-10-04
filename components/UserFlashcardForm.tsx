@@ -35,6 +35,7 @@ import { useColorScheme } from "nativewind";
 import { StatusBar } from "expo-status-bar";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { OktoContextType, useOkto } from "okto-sdk-react-native";
+import ThemeSwitcher from "./ThemeSwitcher";
 
 const steps = [
   { id: 1, title: "Basic Details" },
@@ -103,7 +104,7 @@ const UserFlashcardForm = () => {
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
 
-  const { colorScheme, toggleColorScheme } = useColorScheme();
+  const { colorScheme } = useColorScheme();
 
   const progressAnimation = useState(new Animated.Value(0))[0];
 
@@ -289,29 +290,50 @@ const UserFlashcardForm = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* <StatusBar backgroundColor={colorScheme == "dark" ? "black" : "white"} style={colorScheme == "dark" ? "light" : "dark"} /> */}
-      <View style={styles.header}>
+      <StatusBar
+        backgroundColor={colorScheme == "dark" ? "black" : "white"}
+        style={colorScheme == "dark" ? "light" : "dark"}
+      />
+      <View
+        className={`${colorScheme === "dark" ? "bg-[#02050A]" : "bg-white"}`}
+        style={styles.header}
+      >
         <View className="flex flex-row justify-between items-center">
           {currentStep > 0 ? (
             <TouchableOpacity
               onPress={prevStep}
-              className="p-[10px] rounded-full bg-gray-200 w-[45px] flex items-center justify-center text-center"
+              className={`p-[10px] rounded-full w-[45px] flex items-center justify-center text-center ${
+                colorScheme === "dark" ? "bg-white" : "bg-gray-200"
+              }`}
             >
               <Icon name="chevron-back" size={24} color="#000" />
             </TouchableOpacity>
           ) : (
-            <Switch
-              value={colorScheme == "dark"}
-              onChange={toggleColorScheme}
-            />
+            <ThemeSwitcher />
           )}
-          <TouchableOpacity onPress={handleSignOut} style={styles.logoutButton}>
-            <Icon name="log-out-outline" size={24} color="#fff" />
-          </TouchableOpacity>
+          <View className="flex flex-row gap-3 items-center">
+            {currentStep > 0 && (
+              <View>
+                <ThemeSwitcher />
+              </View>
+            )}
+            <TouchableOpacity
+              onPress={handleSignOut}
+              style={styles.logoutButton}
+            >
+              <Icon name="log-out-outline" size={24} color="#fff" />
+            </TouchableOpacity>
+          </View>
         </View>
-        <View className="bg-white">
+        <View
+          className={`${colorScheme === "dark" ? "bg-[#02050A]" : "bg-white"}`}
+        >
           <View className="flex flex-col items-center gap-6">
-            <View className="h-3 bg-gray-200 rounded-full overflow-hidden w-[250px]">
+            <View
+              className={`h-3 ${
+                colorScheme === "dark" ? "bg-white" : "bg-[#02050A]"
+              } rounded-full overflow-hidden w-[250px]`}
+            >
               <Animated.View
                 style={{
                   width: progressAnimation.interpolate({
@@ -323,7 +345,11 @@ const UserFlashcardForm = () => {
                 }}
               />
             </View>
-            <Text className="text-2xl font-JakartaBold self-center text-center">
+            <Text
+              className={`text-2xl font-JakartaBold self-center text-center ${
+                colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+              }`}
+            >
               {steps[currentStep].title}
             </Text>
           </View>
@@ -344,7 +370,7 @@ const UserFlashcardForm = () => {
                 textContentType="name"
                 onChangeText={(value) => handleChange("name", value)}
                 useExpoVectorIcons={true}
-                icon="person"
+                icon="person-outline"
               />
               <InputField
                 label="Work Email"
@@ -353,7 +379,7 @@ const UserFlashcardForm = () => {
                 value={formValues.email}
                 onChangeText={(value) => handleChange("email", value)}
                 useExpoVectorIcons={true}
-                icon="mail"
+                icon="mail-outline"
               />
               <InputField
                 label="Designation"
@@ -361,7 +387,7 @@ const UserFlashcardForm = () => {
                 value={formValues.designation}
                 onChangeText={(value) => handleChange("designation", value)}
                 useExpoVectorIcons={true}
-                icon="manage-accounts"
+                icon="laptop-chromebook"
               />
               <InputArea
                 label="Profile Bio"
@@ -369,14 +395,18 @@ const UserFlashcardForm = () => {
                 value={formValues.profileData}
                 onChangeText={(value) => handleChange("profileData", value)}
                 useExpoVectorIcons={true}
-                icon="info"
+                icon="info-outline"
               />
             </View>
           )}
 
           {currentStep === 1 && (
             <View>
-              <Text className="font-JakartaSemiBold text-lg mt-2">
+              <Text
+                className={`font-JakartaSemiBold text-lg mt-2 mb-1 ${
+                  colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+                }`}
+              >
                 Select Your Gender
               </Text>
               <View style={styles.avatarContainer}>
@@ -401,7 +431,9 @@ const UserFlashcardForm = () => {
                       </View>
                     )}
                     <Text
-                      className="font-JakartaMedium"
+                      className={`font-JakartaMedium ${
+                        colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+                      }`}
                       style={styles.genderLabel}
                     >
                       {avatar.gender}
@@ -410,23 +442,33 @@ const UserFlashcardForm = () => {
                 ))}
               </View>
 
-              <Text className="text-lg font-JakartaSemiBold mb-3">
+              <Text
+                className={`text-lg font-JakartaSemiBold mb-3 ${
+                  colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+                }`}
+              >
                 Select Your Date of Birth
               </Text>
               <TouchableOpacity
                 onPress={() => setOpen(true)}
-                className="flex flex-row justify-start items-center relative bg-neutral-100 rounded-full border border-neutral-100 focus:border-primary-500"
+                className={`flex flex-row justify-start items-center relative rounded-full border border-neutral-100 focus:border-primary-500 ${
+                  colorScheme === "dark" ? "bg-[#02050A]" : "bg-neutral-100"
+                }`}
               >
                 <View className="ml-4">
                   <MaterialIcons
-                    name="date-range"
+                    name="edit-calendar"
                     size={24}
                     className=""
                     color={"#0286FF"}
                   />
                 </View>
                 <View className="rounded-full p-4 font-JakartaSemiBold text-[15px] flex-1">
-                  <Text className="text-lg font-JakartaSemiBold mb-[4px]">
+                  <Text
+                    className={`text-lg font-JakartaSemiBold mb-[4px] ${
+                      colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+                    }`}
+                  >
                     {date.toString().split(" ").slice(1, 4).join(" ")}
                   </Text>
                 </View>
@@ -441,7 +483,11 @@ const UserFlashcardForm = () => {
                 <Calendar setOpen={setOpen} setDate={setDate} setAge={setAge} />
               </Modal>
 
-              <Text className="text-lg font-JakartaSemiBold my-3">
+              <Text
+                className={`text-lg font-JakartaSemiBold my-3 ${
+                  colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+                }`}
+              >
                 Profile Picture
               </Text>
               <View style={styles.imageContainer}>
@@ -481,9 +527,9 @@ const UserFlashcardForm = () => {
                 value={skill}
                 onChangeText={setSkill}
                 useExpoVectorIcons={true}
-                icon="rocket-launch"
+                icon="navigation"
                 iconRight={true}
-                rightIcon="add-circle"
+                rightIcon="add-circle-outline"
                 righButtonOnPress={addSkill}
               />
               <View
@@ -507,7 +553,11 @@ const UserFlashcardForm = () => {
               {projects.map((project, index) => (
                 <View className="mt-2" key={index}>
                   <View className="flex flex-row justify-between items-center">
-                    <Text className="font-JakartaSemiBold text-lg">
+                    <Text
+                      className={`font-JakartaSemiBold text-lg mb-2 ${
+                        colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+                      }`}
+                    >
                       Project {index + 1}
                     </Text>
                     {index > 0 && (
@@ -519,7 +569,7 @@ const UserFlashcardForm = () => {
                             color="#0286FF"
                           />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => removeProject(index)}>
+                        <TouchableOpacity className="pt-0.5" onPress={() => removeProject(index)}>
                           <AntDesign
                             name="minuscircle"
                             size={24}
@@ -554,7 +604,7 @@ const UserFlashcardForm = () => {
                       updateProject(index, "description", value)
                     }
                     useExpoVectorIcons={true}
-                    icon="description"
+                    icon="import-contacts"
                   />
                 </View>
               ))}
@@ -585,7 +635,7 @@ const UserFlashcardForm = () => {
                 useExpoVectorIcons={true}
                 icon="interests"
                 iconRight={true}
-                rightIcon="add-circle"
+                rightIcon="add-circle-outline"
                 righButtonOnPress={addInterest}
               />
               <View
@@ -614,7 +664,7 @@ const UserFlashcardForm = () => {
                 useExpoVectorIcons={true}
                 icon="work"
                 iconRight={true}
-                rightIcon="add-circle"
+                rightIcon="add-circle-outline"
                 righButtonOnPress={addDomain}
               />
               <View
@@ -648,7 +698,7 @@ const UserFlashcardForm = () => {
                 useExpoVectorIcons={true}
                 icon="web"
                 iconRight={true}
-                rightIcon="add-circle"
+                rightIcon="add-circle-outline"
                 righButtonOnPress={addSocialLink}
               />
               <View
@@ -683,9 +733,9 @@ const UserFlashcardForm = () => {
                 value={achievement}
                 onChangeText={setAchievement}
                 useExpoVectorIcons={true}
-                icon="stars"
+                icon="star-outline"
                 iconRight={true}
-                rightIcon="add-circle"
+                rightIcon="add-circle-outline"
                 righButtonOnPress={addAchievement}
               />
               <View
@@ -771,7 +821,10 @@ const UserFlashcardForm = () => {
           )}
         </View>
       </ScrollView>
-      <View style={styles.footer}>
+      <View
+        className={`${colorScheme === "dark" ? "bg-[#02050A]" : "bg-white"}`}
+        style={styles.footer}
+      >
         {currentStep < steps.length - 1 ? (
           <CustomButton className="mx-auto" title="Next" onPress={nextStep} />
         ) : (
@@ -788,13 +841,13 @@ const UserFlashcardForm = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginTop: 10,
   },
   header: {
     position: "absolute",
     top: 0,
     left: 0,
     right: 0,
-    backgroundColor: "#fff",
     flexDirection: "column",
     gap: 20,
     justifyContent: "space-between",
@@ -807,7 +860,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: "#fff",
     zIndex: 10,
     flexDirection: "row",
     justifyContent: "center",
@@ -859,8 +911,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   avatar: {
-    width: 80,
-    height: 80,
+    width: 75,
+    height: 75,
   },
   tickContainer: {
     position: "absolute",
@@ -917,7 +969,6 @@ const styles = StyleSheet.create({
     borderRadius: 75,
     borderColor: "#0286FF",
     borderWidth: 2,
-    backgroundColor: "#fff",
   },
   uploadButton: {
     backgroundColor: "#0286FF",

@@ -15,7 +15,8 @@ const Page = () => {
   //   }
   // }
 
-  if (GoogleSignin.getCurrentUser()) return <Redirect href="/(root)/userFlashcardForm" />;
+  if (GoogleSignin.getCurrentUser())
+    return <Redirect href="/(root)/userFlashcardForm" />;
 
   return <Redirect href="/(auth)/welcome" />;
 };

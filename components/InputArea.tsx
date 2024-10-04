@@ -11,6 +11,7 @@ import {
 
 import { InputFieldProps } from "@/types/type";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useColorScheme } from "nativewind";
 
 const InputArea = ({
   label,
@@ -24,6 +25,7 @@ const InputArea = ({
   useExpoVectorIcons,
   ...props
 }: InputFieldProps) => {
+  const { colorScheme } = useColorScheme();
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -31,12 +33,18 @@ const InputArea = ({
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View className="my-2 w-full">
           {label && (
-            <Text className={`text-lg font-JakartaSemiBold mb-3 ${labelStyle}`}>
+            <Text
+              className={`text-lg font-JakartaSemiBold mb-3 ${labelStyle} ${
+                colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+              }`}
+            >
               {label}
             </Text>
           )}
           <View
-            className={`flex flex-row justify-start bg-neutral-100 rounded-xl border border-neutral-100 focus:border-primary-500  ${containerStyle}`}
+            className={`flex flex-row justify-start rounded-xl border border-neutral-100 focus:border-primary-500 ${containerStyle} ${containerStyle} ${
+              colorScheme === "dark" ? "bg-[#02050A]" : "bg-neutral-100"
+            }`}
           >
             {useExpoVectorIcons ? (
               <View className="ml-4 mt-4">
@@ -53,8 +61,13 @@ const InputArea = ({
               )
             )}
             <TextInput
+              placeholderTextColor={
+                colorScheme === "dark" ? "#e0e0e0" : "#616161"
+              }
               cursorColor={"#0286FF"}
-              className={`p-4 font-JakartaSemiBold text-[15px] flex-1 ${inputStyle}`}
+              className={`p-4 font-JakartaSemiBold text-[15px] flex-1 ${inputStyle} ${
+                colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+              }`}
               secureTextEntry={secureTextEntry}
               multiline={true}
               numberOfLines={4}
