@@ -5,7 +5,10 @@ import { Alert, Image, Text, View } from "react-native";
 import CustomButton from "@/components/CustomButton";
 import { icons } from "@/constants";
 import { googleOAuth } from "@/lib/auth";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import {
+  GoogleSignin,
+  type ConfigureParams,
+} from "@react-native-google-signin/google-signin";
 import { useOkto, type OktoContextType } from "okto-sdk-react-native";
 import { fetchAPI } from "@/lib/fetch";
 import { useColorScheme } from "nativewind";
@@ -89,7 +92,13 @@ const OAuth = ({ title }: { title: string }) => {
     <View>
       <View className="flex flex-row justify-center items-center mt-4 gap-x-3">
         <View className="flex-1 h-[1px] bg-general-100" />
-        <Text className={`text-lg font-JakartaSemiBold ${colorScheme === "dark" ? "text-white" : "text-[#02050A]"}`}>Or</Text>
+        <Text
+          className={`text-lg font-JakartaSemiBold ${
+            colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+          }`}
+        >
+          Or
+        </Text>
         <View className="flex-1 h-[1px] bg-general-100" />
       </View>
 

@@ -33,10 +33,18 @@ import * as DocumentPicker from "expo-document-picker";
 import { WebView } from "react-native-webview";
 import { useColorScheme } from "nativewind";
 import { StatusBar } from "expo-status-bar";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { OktoContextType, useOkto } from "okto-sdk-react-native";
+import {
+  GoogleSignin,
+  type ConfigureParams,
+} from "@react-native-google-signin/google-signin";
+import {
+  OktoContextType,
+  Portfolio,
+  useOkto,
+} from "okto-sdk-react-native";
 import ThemeSwitcher from "./ThemeSwitcher";
 import WalletConnection from "./WalletConnection";
+import OktoApiButton from "./OktoApiButton";
 
 const steps = [
   { id: 1, title: "Basic Details" },
@@ -70,6 +78,9 @@ interface SocialLink {
   link: string;
   username: string;
 }
+
+const webClientId =
+  "328551301503-nq398rv0ff8nrubpu8l71avde3c0h78e.apps.googleusercontent.com";
 
 const UserFlashcardForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -110,9 +121,47 @@ const UserFlashcardForm = () => {
   const progressAnimation = useState(new Animated.Value(0))[0];
 
   const { signOut } = useAuth();
-  const { logOut } = useOkto() as OktoContextType;
+  const {
+    logOut,
+    getPortfolio,
+    createWallet,
+    transferTokensWithJobStatus,
+  } = useOkto() as OktoContextType;
+  const [portfolio, setPortfolio] = useState<Portfolio[]>([]);
 
-  GoogleSignin.configure({});
+  const [networkName, setNetworkName] = useState("POLYGON_TESTNET");
+  const [tokenAddress, setTokenAddress] = useState("x2f7b97837f2d14ba2ed3a4b2282e259126a9b848");
+  const [quantity, setQuantity] = useState("1");
+  const [recipientAddress, setRecipientAddress] = useState(
+    "0x0FC096A53343C68c1086e626661A4bb31486A9e2"
+  );
+
+  const handleSubmitTransferTokensWithJobStatus = () => {
+    console.log("Calling transfer funds: ", {
+      networkName,
+      tokenAddress,
+      recipientAddress,
+      quantity,
+    });
+    transferTokensWithJobStatus({
+      network_name: networkName,
+      token_address: tokenAddress,
+      recipient_address: recipientAddress,
+      quantity,
+    })
+      .then((result) => {
+        console.log("Transfer success", result);
+      })
+      .catch((error) => {
+        console.log("Transfer error", error);
+      });
+  };
+
+  // GoogleSignin.configure({});
+  GoogleSignin.configure({
+    scopes: ["email", "profile"],
+    webClientId,
+  });
 
   const handleSignOut = async () => {
     try {
@@ -292,6 +341,16 @@ const UserFlashcardForm = () => {
       setResume(result);
     }
   };
+
+  const makeWallet = () => {
+    createWallet()
+        .then((result) => {
+            console.log(result)
+        })
+        .catch((error) => {
+            console.error(`error:`, error);
+        });
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -819,6 +878,7 @@ const UserFlashcardForm = () => {
 
           {currentStep === 8 && (
             <View>
+              <View>
               {/* <InputField
                 label="Blockchain Wallet"
                 placeholder="Enter wallet address"
@@ -826,6 +886,66 @@ const UserFlashcardForm = () => {
                 onChangeText={(value) => handleChange("walletAddress", value)}
               /> */}
               <WalletConnection />
+              <OktoApiButton
+                title="Get Portfolio"
+                apiFn={() => getPortfolio()}
+                setterFn={setPortfolio}
+                className="mt-5"
+                IconLeft={() => (
+                  <Image
+                    source={icons.list}
+                    resizeMode="contain"
+                    className="w-5 h-5 mx-2"
+                  />
+                )}
+              />
+              <CustomButton className="mt-5 mx-auto" title="Create" onPress={makeWallet} />
+              {/* <InputField
+                label="Network Name"
+                placeholder="Enter network name"
+                value={networkName}
+                onChangeText={(value) => setNetworkName(value)}
+                useExpoVectorIcons={true}
+                icon="person-outline"
+              />
+              <InputField
+                label="Token Address"
+                placeholder="Enter token address"
+                value={tokenAddress}
+                onChangeText={(value) => setTokenAddress(value)}
+                useExpoVectorIcons={true}
+                icon="mail-outline"
+              />
+              <InputField
+                label="Quantity"
+                placeholder="Enter quantity"
+                value={quantity}
+                onChangeText={(value) => setQuantity(value)}
+                useExpoVectorIcons={true}
+                icon="laptop-chromebook"
+              />
+              <InputField
+                label="Recipient Address"
+                placeholder="Enter recipient address"
+                value={recipientAddress}
+                onChangeText={(value) => setRecipientAddress(value)}
+                useExpoVectorIcons={true}
+                icon="info-outline"
+              />
+          
+            <CustomButton
+            title="Transfer Tokens"
+            onPress={handleSubmitTransferTokensWithJobStatus}
+            className="mt-5"
+            IconLeft={() => (
+              <Image
+                source={icons.list}
+                resizeMode="contain"
+                className="w-5 h-5 mx-2"
+              />
+            )}
+          /> */}
+            </View>
             </View>
           )}
         </View>

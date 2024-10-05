@@ -17,7 +17,10 @@ import {
 } from "@solana-mobile/mobile-wallet-adapter-protocol-web3js";
 import CustomButton from "@/components/CustomButton";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import {
+  GoogleSignin,
+  type ConfigureParams,
+} from "@react-native-google-signin/google-signin";
 import {
   Network,
   OktoContextType,
@@ -33,12 +36,8 @@ const webClientId =
 const WalletConnection = () => {
   const { colorScheme } = useColorScheme();
   const { signOut } = useAuth();
-  const {
-    showWidgetSheet,
-    setTheme,
-    authenticate,
-    getPortfolio,
-  } = useOkto() as OktoContextType;
+  const { showWidgetSheet, setTheme, authenticate, getPortfolio } =
+    useOkto() as OktoContextType;
   const [portfolio, setPortfolio] = useState<Portfolio[]>([]);
 
   setTheme({
