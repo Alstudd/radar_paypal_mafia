@@ -41,6 +41,7 @@ import {
   OktoContextType,
   Portfolio,
   useOkto,
+  Wallet,
 } from "okto-sdk-react-native";
 import ThemeSwitcher from "./ThemeSwitcher";
 import WalletConnection from "./WalletConnection";
@@ -125,9 +126,11 @@ const UserFlashcardForm = () => {
     logOut,
     getPortfolio,
     createWallet,
+    getWallets,
     transferTokensWithJobStatus,
   } = useOkto() as OktoContextType;
   const [portfolio, setPortfolio] = useState<Portfolio[]>([]);
+  const [wallets, setWallets] = useState<Wallet[]>([]);
 
   const [networkName, setNetworkName] = useState("POLYGON_TESTNET");
   const [tokenAddress, setTokenAddress] = useState("x2f7b97837f2d14ba2ed3a4b2282e259126a9b848");
@@ -890,6 +893,19 @@ const UserFlashcardForm = () => {
                 title="Get Portfolio"
                 apiFn={() => getPortfolio()}
                 setterFn={setPortfolio}
+                className="mt-5"
+                IconLeft={() => (
+                  <Image
+                    source={icons.list}
+                    resizeMode="contain"
+                    className="w-5 h-5 mx-2"
+                  />
+                )}
+              />
+              <OktoApiButton
+                title="Get Portfolio"
+                apiFn={() => getWallets()}
+                setterFn={setWallets}
                 className="mt-5"
                 IconLeft={() => (
                   <Image
