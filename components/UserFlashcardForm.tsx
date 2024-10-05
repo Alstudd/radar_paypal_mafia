@@ -36,6 +36,7 @@ import { StatusBar } from "expo-status-bar";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { OktoContextType, useOkto } from "okto-sdk-react-native";
 import ThemeSwitcher from "./ThemeSwitcher";
+import WalletConnection from "./WalletConnection";
 
 const steps = [
   { id: 1, title: "Basic Details" },
@@ -818,12 +819,13 @@ const UserFlashcardForm = () => {
 
           {currentStep === 8 && (
             <View>
-              <InputField
+              {/* <InputField
                 label="Blockchain Wallet"
                 placeholder="Enter wallet address"
                 value={formValues.walletAddress}
                 onChangeText={(value) => handleChange("walletAddress", value)}
-              />
+              /> */}
+              <WalletConnection />
             </View>
           )}
         </View>

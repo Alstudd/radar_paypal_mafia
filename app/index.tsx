@@ -5,7 +5,7 @@ import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 const Page = () => {
   const { isSignedIn } = useAuth();
-  const isProfileCompleted = true;
+  const isProfileCompleted = false;
 
   if (GoogleSignin.getCurrentUser() || isSignedIn) {
     if (isProfileCompleted) {

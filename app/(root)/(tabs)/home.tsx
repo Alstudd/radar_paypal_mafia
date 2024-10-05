@@ -27,7 +27,18 @@ const home = () => {
   const { colorScheme } = useColorScheme();
   const { user } = useUser();
   const { signOut } = useAuth();
-  const { logOut, showWidgetSheet, closeBottomSheet } = useOkto() as OktoContextType;
+  const { logOut, showWidgetSheet, setTheme } = useOkto() as OktoContextType;
+  setTheme({
+    textPrimaryColor: colorScheme === "dark" ? '0xFFFFFFFF': '0xFF616161',
+    textSecondaryColor: colorScheme === "dark" ? '0xFFFFFFFF': '0xFF616161',
+    textTertiaryColor: colorScheme === "dark" ? '0xFFFFFFFF': '0xFF616161',
+    accent1Color: '0x80433454',
+    accent2Color: '0x80905BF5',
+    strokeBorderColor: '0xFFACACAB',
+    strokeDividerColor: '0x4DA8A8A8',
+    surfaceColor: '0xFF1F0A2F',
+    backgroundColor: colorScheme === "dark" ? '0xFF000000' : '0xFFFFFFFF',
+  });
 
   GoogleSignin.configure({});
 
@@ -103,15 +114,12 @@ const home = () => {
       if (GoogleSignin.getCurrentUser()) {
         setTimeout(() => {
           showWidgetSheet();
-        }, 1000);
+        }, 3000);
       }
     } catch (error) {
       console.error("Error during sign-in:", error);
     }
   }
-
-  // call show widget sheet if user is google signed in
-  
 
   return (
     <SafeAreaView className={`${colorScheme === 'dark' ? 'bg-[#02050A]' : 'bg-white'} h-full`}>

@@ -164,11 +164,23 @@ const SignUp = () => {
             }
           }}
         >
-          <View className="bg-white px-7 py-9 rounded-2xl min-h-[300px]">
-            <Text className="font-JakartaExtraBold text-2xl mb-2">
+          <View
+            className={`${
+              colorScheme === "dark" ? "bg-[#02050A]" : "bg-white"
+            } px-7 py-9 rounded-2xl min-h-[300px]`}
+          >
+            <Text
+              className={`${
+                colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+              } font-JakartaExtraBold text-2xl mb-2`}
+            >
               Verification
             </Text>
-            <Text className="font-Jakarta mb-5">
+            <Text
+              className={`${
+                colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+              } font-Jakarta mb-5`}
+            >
               We've sent a verification code to {form.email}.
             </Text>
             <InputField
@@ -194,12 +206,20 @@ const SignUp = () => {
           </View>
         </ReactNativeModal>
         <ReactNativeModal isVisible={showSuccessModal}>
-          <View className="bg-white px-7 py-9 rounded-2xl min-h-[300px]">
+          <View
+            className={`${
+              colorScheme === "dark" ? "bg-[#02050A]" : "bg-white"
+            } px-7 py-9 rounded-2xl min-h-[300px]`}
+          >
             <Image
               source={images.check}
               className="w-[110px] h-[110px] mx-auto my-5"
             />
-            <Text className="text-3xl font-JakartaBold text-center">
+            <Text
+              className={`${
+                colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+              } text-3xl font-JakartaBold text-center`}
+            >
               Verified
             </Text>
             <Text className="text-base text-gray-400 font-Jakarta text-center mt-2">
@@ -220,7 +240,9 @@ const SignUp = () => {
             router.replace("/(auth)/welcome");
           }}
         >
-          <Text className="text-md font-JakartaBold text-white">Who are we?</Text>
+          <Text className="text-md font-JakartaBold text-white">
+            Who are we?
+          </Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
