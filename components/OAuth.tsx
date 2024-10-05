@@ -8,18 +8,20 @@ import { googleOAuth } from "@/lib/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { useOkto, type OktoContextType } from "okto-sdk-react-native";
 import { fetchAPI } from "@/lib/fetch";
+import { useColorScheme } from "nativewind";
 
 const webClientId =
   "328551301503-nq398rv0ff8nrubpu8l71avde3c0h78e.apps.googleusercontent.com";
 
-const OAuth = () => {
+const OAuth = ({ title }: { title: string }) => {
+  const { colorScheme } = useColorScheme();
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
   const handleGoogleSignIn = async () => {
     const result = await googleOAuth(startOAuthFlow);
 
     if (result.code === "session_exists") {
       Alert.alert("Success", "Session exists. Redirecting to home screen.");
-      router.replace("/(root)/userFlashcardForm");
+      router.replace("/");
     }
 
     Alert.alert(result.success ? "Success" : "Error", result.message);
@@ -34,17 +36,28 @@ const OAuth = () => {
       });
       await GoogleSignin.hasPlayServices();
       const response: any = await GoogleSignin.signIn();
+      if (!response.data) {
+        console.log("Google sign-in failed");
+        return;
+      }
 
       const { data } = await fetchAPI("/(api)/user");
-      const user = data.find((user: any) => user.email === response.data.user.email);
+      const user = data.find(
+        (user: any) => user.email === response.data.user.email
+      );
 
       if (!user) {
         await fetchAPI("/(api)/user", {
           method: "POST",
           body: JSON.stringify({
             fullname: response.data.user.name,
-            firstname: response.data.user.givenName || response.data.user.name.split(" ")[0],
-            lastname: response.data.user.familyName || response.data.user.name.split(" ")[1] || null,
+            firstname:
+              response.data.user.givenName ||
+              response.data.user.name.split(" ")[0],
+            lastname:
+              response.data.user.familyName ||
+              response.data.user.name.split(" ")[1] ||
+              null,
             email: response.data.user.email,
             photo: response.data.user.photo,
             user_id: response.data.user.id,
@@ -60,7 +73,7 @@ const OAuth = () => {
             "Success",
             "You have successfully signed in with Google and authenticated with Okto"
           );
-          router.replace("/(root)/userFlashcardForm");
+          router.replace("/");
         }
         if (error) {
           console.error("authentication error:", error);
@@ -76,22 +89,22 @@ const OAuth = () => {
     <View>
       <View className="flex flex-row justify-center items-center mt-4 gap-x-3">
         <View className="flex-1 h-[1px] bg-general-100" />
-        <Text className="text-lg">Or</Text>
+        <Text className={`text-lg font-JakartaSemiBold ${colorScheme === "dark" ? "text-white" : "text-[#02050A]"}`}>Or</Text>
         <View className="flex-1 h-[1px] bg-general-100" />
       </View>
 
       <CustomButton
-        title="Log In with Google"
+        title={`${title} with Google`}
         className="mt-5 w-full shadow-none"
         IconLeft={() => (
           <Image
             source={icons.google}
             resizeMode="contain"
-            className="w-5 h-5 mx-2"
+            className="w-5 h-5 mx-2 mt-1"
           />
         )}
         bgVariant="outline"
-        textVariant="primary"
+        textVariant={colorScheme === "dark" ? "default" : "primary"}
         onPress={handleGoogleSignInUsingOkto}
       />
     </View>

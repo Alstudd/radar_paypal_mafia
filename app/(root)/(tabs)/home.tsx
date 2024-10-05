@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { router } from "expo-router";
 import { useAuth, useUser } from "@clerk/clerk-expo";
@@ -20,6 +20,9 @@ export const APP_IDENTITY = {
   icon: "favicon.ico",
 };
 
+const webClientId =
+  "328551301503-nq398rv0ff8nrubpu8l71avde3c0h78e.apps.googleusercontent.com";
+
 const home = () => {
   const { colorScheme } = useColorScheme();
   const { user } = useUser();
@@ -30,18 +33,53 @@ const home = () => {
 
   const handleSignOut = async () => {
     try {
-      await GoogleSignin.revokeAccess();
-      await GoogleSignin.signOut();
-      console.log("Google sign-out successful");
+      if (GoogleSignin.getCurrentUser()) {
+        await GoogleSignin.revokeAccess();
+        await GoogleSignin.signOut();
+        console.log("Google sign-out successful");
 
-      await logOut();
-      console.log("Okto sign-out successful");
-
+        await logOut();
+        console.log("Okto sign-out successful");
+      } else {
+        signOut();
+        console.log("Clerk sign-out successful");
+      }
       router.replace("/(auth)/sign-in");
     } catch (error) {
       console.error("Error during sign-out:", error);
     }
   };
+
+  const { authenticate } = useOkto() as OktoContextType;
+  async function handleGoogleSignInUsingOkto() {
+    try {
+      GoogleSignin.configure({
+        scopes: ["email", "profile"],
+        webClientId,
+      });
+      await GoogleSignin.hasPlayServices();
+      const response: any = await GoogleSignin.signIn();
+      if (!response.data) {
+        console.log("Google sign-in failed");
+        return;
+      }
+
+      const { idToken } = response.data;
+      authenticate(idToken, (result, error) => {
+        if (result) {
+          console.log("authentication successful");
+          signOut();
+          console.log("Clerk sign-out successful");
+        }
+        if (error) {
+          console.error("authentication error:", error);
+        }
+      });
+    } catch (error) {
+      console.log(error);
+      console.log("Something went wrong. Please try again");
+    }
+  }
 
   // const connect = async () => {
   //   const authorizationResult = await transact(
@@ -57,9 +95,23 @@ const home = () => {
   //   console.log("Connected to: " + authorizationResult.accounts[0].address);
   // };
 
-  const connect = () => {
-    showWidgetSheet();
+  const connect = async () => {
+    try {
+      if (!GoogleSignin.getCurrentUser()) {
+        await handleGoogleSignInUsingOkto();
+      }
+      if (GoogleSignin.getCurrentUser()) {
+        setTimeout(() => {
+          showWidgetSheet();
+        }, 1000);
+      }
+    } catch (error) {
+      console.error("Error during sign-in:", error);
+    }
   }
+
+  // call show widget sheet if user is google signed in
+  
 
   return (
     <SafeAreaView className={`${colorScheme === 'dark' ? 'bg-[#02050A]' : 'bg-white'} h-full`}>

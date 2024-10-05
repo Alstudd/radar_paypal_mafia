@@ -7,22 +7,28 @@ import Icon from "@expo/vector-icons/Ionicons";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { OktoContextType, useOkto } from "okto-sdk-react-native";
 import { router } from "expo-router";
+import { useAuth } from "@clerk/clerk-expo";
 
 const TopNav = () => {
   const { selectedMode, setSelectedMode } = useSelectedMode();
   const { logOut } = useOkto() as OktoContextType;
+  const { signOut } = useAuth();
 
   GoogleSignin.configure({});
 
   const handleSignOut = async () => {
     try {
-      await GoogleSignin.revokeAccess();
-      await GoogleSignin.signOut();
-      console.log("Google sign-out successful");
+      if (GoogleSignin.getCurrentUser()) {
+        await GoogleSignin.revokeAccess();
+        await GoogleSignin.signOut();
+        console.log("Google sign-out successful");
 
-      await logOut();
-      console.log("Okto sign-out successful");
-
+        await logOut();
+        console.log("Okto sign-out successful");
+      } else {
+        signOut();
+        console.log("Clerk sign-out successful");
+      }
       router.replace("/(auth)/sign-in");
     } catch (error) {
       console.error("Error during sign-out:", error);
@@ -47,7 +53,9 @@ const TopNav = () => {
             ]}
             onPress={() => setSelectedMode(mode)}
           >
-            <Text style={styles.buttonText}>{mode}</Text>
+            <Text className="font-JakartaMedium" style={styles.buttonText}>
+              {mode}
+            </Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -86,7 +94,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "white",
-    fontSize: 16,
+    fontSize: 15,
   },
   logoutButton: {
     padding: 10,

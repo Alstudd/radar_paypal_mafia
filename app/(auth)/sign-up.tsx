@@ -1,7 +1,14 @@
 import { useSignUp } from "@clerk/clerk-expo";
 import { Link, router } from "expo-router";
 import { useState } from "react";
-import { Alert, Image, ScrollView, Text, View } from "react-native";
+import {
+  Alert,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { ReactNativeModal } from "react-native-modal";
 
 import CustomButton from "@/components/CustomButton";
@@ -9,6 +16,8 @@ import InputField from "@/components/InputField";
 import OAuth from "@/components/OAuth";
 import { icons, images } from "@/constants";
 import { fetchAPI } from "@/lib/fetch";
+import { useColorScheme } from "nativewind";
+import ThemeSwitcher from "@/components/ThemeSwitcher";
 
 const SignUp = () => {
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -80,9 +89,20 @@ const SignUp = () => {
       });
     }
   };
+
+  const { colorScheme } = useColorScheme();
+
   return (
-    <ScrollView className="flex-1 bg-white">
-      <View className="flex-1 bg-white">
+    <ScrollView
+      className={`flex-1 ${
+        colorScheme === "dark" ? "bg-[#02050A]" : "bg-white"
+      }`}
+    >
+      <View
+        className={`flex-1 ${
+          colorScheme === "dark" ? "bg-[#02050A]" : "bg-white"
+        }`}
+      >
         <View className="relative w-full h-[250px]">
           <Image
             source={{
@@ -124,10 +144,10 @@ const SignUp = () => {
             onPress={onSignUpPress}
             className="mt-6"
           />
-          <OAuth />
+          <OAuth title={"Sign Up"} />
           <Link
             href="/sign-in"
-            className="text-lg text-center text-general-200 mt-10"
+            className="text-lg text-center text-general-200 mt-10 font-Jakarta"
           >
             Already have an account?{" "}
             <Text className="text-primary-500">Log In</Text>
@@ -187,11 +207,21 @@ const SignUp = () => {
             </Text>
             <CustomButton
               title="Browse Home"
-              onPress={() => router.push(`/(root)/userFlashcardForm`)}
+              onPress={() => router.replace("/")}
               className="mt-5"
             />
           </View>
         </ReactNativeModal>
+      </View>
+      <View className="absolute top-5 w-full flex flex-row justify-between items-center p-5">
+        <ThemeSwitcher />
+        <TouchableOpacity
+          onPress={() => {
+            router.replace("/(auth)/welcome");
+          }}
+        >
+          <Text className="text-md font-JakartaBold text-white">Who are we?</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );

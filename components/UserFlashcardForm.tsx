@@ -115,13 +115,17 @@ const UserFlashcardForm = () => {
 
   const handleSignOut = async () => {
     try {
-      await GoogleSignin.revokeAccess();
-      await GoogleSignin.signOut();
-      console.log("Google sign-out successful");
+      if (GoogleSignin.getCurrentUser()) {
+        await GoogleSignin.revokeAccess();
+        await GoogleSignin.signOut();
+        console.log("Google sign-out successful");
 
-      await logOut();
-      console.log("Okto sign-out successful");
-
+        await logOut();
+        console.log("Okto sign-out successful");
+      } else {
+        signOut();
+        console.log("Clerk sign-out successful");
+      }
       router.replace("/(auth)/sign-in");
     } catch (error) {
       console.error("Error during sign-out:", error);
@@ -569,7 +573,10 @@ const UserFlashcardForm = () => {
                             color="#536dfe"
                           />
                         </TouchableOpacity>
-                        <TouchableOpacity className="pt-0.5" onPress={() => removeProject(index)}>
+                        <TouchableOpacity
+                          className="pt-0.5"
+                          onPress={() => removeProject(index)}
+                        >
                           <AntDesign
                             name="minuscircle"
                             size={24}

@@ -1,12 +1,21 @@
 import { useSignIn } from "@clerk/clerk-expo";
 import { Link, router } from "expo-router";
 import { useCallback, useState } from "react";
-import { Alert, Image, ScrollView, Text, View } from "react-native";
+import {
+  Alert,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 import CustomButton from "@/components/CustomButton";
 import InputField from "@/components/InputField";
 import OAuth from "@/components/OAuth";
 import { icons, images } from "@/constants";
+import { useColorScheme } from "nativewind";
+import ThemeSwitcher from "@/components/ThemeSwitcher";
 
 const SignIn = () => {
   const { signIn, setActive, isLoaded } = useSignIn();
@@ -27,7 +36,7 @@ const SignIn = () => {
 
       if (signInAttempt.status === "complete") {
         await setActive({ session: signInAttempt.createdSessionId });
-        router.replace("/(root)/userFlashcardForm");
+        router.replace("/");
       } else {
         console.log(JSON.stringify(signInAttempt, null, 2));
         Alert.alert("Error", "Log in failed. Please try again.");
@@ -38,9 +47,19 @@ const SignIn = () => {
     }
   }, [isLoaded, form]);
 
+  const { colorScheme } = useColorScheme();
+
   return (
-    <ScrollView className="flex-1 bg-white">
-      <View className="flex-1 bg-white">
+    <ScrollView
+      className={`flex-1 ${
+        colorScheme === "dark" ? "bg-[#02050A]" : "bg-white"
+      }`}
+    >
+      <View
+        className={`flex-1 ${
+          colorScheme === "dark" ? "bg-[#02050A]" : "bg-white"
+        }`}
+      >
         <View className="relative w-full h-[250px]">
           <Image
             source={{
@@ -79,16 +98,26 @@ const SignIn = () => {
             className="mt-6"
           />
 
-          <OAuth />
+          <OAuth title={"Log In"} />
 
           <Link
             href="/sign-up"
-            className="text-lg text-center text-general-200 mt-10"
+            className="text-lg text-center text-general-200 mt-10 font-Jakarta"
           >
             Don't have an account?{" "}
             <Text className="text-primary-500">Sign Up</Text>
           </Link>
         </View>
+      </View>
+      <View className="absolute top-5 w-full flex flex-row justify-between items-center p-5">
+        <ThemeSwitcher />
+        <TouchableOpacity
+          onPress={() => {
+            router.replace("/(auth)/welcome");
+          }}
+        >
+          <Text className="text-md font-JakartaBold text-white">Who are we?</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );

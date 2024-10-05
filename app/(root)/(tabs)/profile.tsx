@@ -7,61 +7,89 @@ import {
   type OktoContextType,
   type User,
 } from "okto-sdk-react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { fetchAPI } from "@/lib/fetch";
 import { icons } from "@/constants";
 import { useColorScheme } from "nativewind";
 
-interface UserData {
-  fullname: string;
-  firstname: string;
-  lastname: string;
-  email: string;
-  photo: string;
-  user_id: string;
-}
-
 const Profile = () => {
+  const { user: clerkUser, isSignedIn: isClerkSignedIn } = useUser();
   const { colorScheme } = useColorScheme();
   const [userDetails, setUserDetails] = useState<User | null>(null);
-  const [userData, setUserData] = useState<UserData | null>(null);
+  const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   const { getUserDetails } = useOkto() as OktoContextType;
 
-  React.useEffect(() => {
-    getUserDetails()
-      .then((result) => {
-        setUserDetails(result);
-      })
-      .catch((error) => {
-        console.error(`error:`, error);
-      });
-  }, []);
+  useEffect(() => {
+    if (!isClerkSignedIn) {
+      getUserDetails()
+        .then((result: User) => {
+          setUserDetails(result);
+        })
+        .catch((error) => {
+          console.error("Error fetching Okto user details:", error);
+        });
+    }
+  }, [isClerkSignedIn]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
-      const { data } = await fetchAPI("/(api)/user");
-      const user = data.find((user: any) => user.email === userDetails?.email);
-      setUserData(user);
-      setLoading(false);
+      try {
+        setLoading(true);
+        const { data } = await fetchAPI("/(api)/user");
+
+        let user;
+        if (isClerkSignedIn) {
+          user = data.find(
+            (user: any) =>
+              user.email === clerkUser?.primaryEmailAddress?.emailAddress
+          );
+        } else if (userDetails) {
+          user = data.find((user: any) => user.email === userDetails?.email);
+        }
+
+        setUserData(user || null);
+        setLoading(false);
+        setFetchError(null);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setFetchError("Failed to load user data.");
+        setLoading(false);
+      }
     };
-    fetchData();
-  }, [userDetails]);
+
+    if (isClerkSignedIn || userDetails) {
+      fetchData();
+    }
+  }, [isClerkSignedIn, clerkUser, userDetails]);
 
   return (
-    <SafeAreaView className={`${colorScheme === 'dark' ? 'bg-[#02050A]' : 'bg-white'} h-full`}>
+    <SafeAreaView
+      className={`${
+        colorScheme === "dark" ? "bg-[#02050A]" : "bg-white"
+      } h-full`}
+    >
       <View className="mt-20">
         {loading ? (
           <View className="flex items-center justify-center h-full">
             <ActivityIndicator size="large" color="#4646fc" />
           </View>
+        ) : fetchError ? (
+          <Text className="text-red-500 text-center">{fetchError}</Text>
         ) : (
           <ScrollView
             className="px-5"
             contentContainerStyle={{ paddingBottom: 120 }}
           >
-            <Text className={`text-2xl font-JakartaBold my-5 ${colorScheme === 'dark' ? 'text-white' : 'text-[#02050A]'}`}>My profile</Text>
+            <Text
+              className={`text-2xl font-JakartaBold my-5 ${
+                colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+              }`}
+            >
+              My profile
+            </Text>
 
             <View className="flex items-center justify-center my-5">
               {userData?.photo ? (
@@ -81,7 +109,13 @@ const Profile = () => {
               )}
             </View>
 
-            <View className={`flex flex-col items-start justify-center ${colorScheme === 'dark' ? 'shadow-none' : 'shadow-sm shadow-neutral-300 bg-white'} rounded-lg px-5 py-3`}>
+            <View
+              className={`flex flex-col items-start justify-center ${
+                colorScheme === "dark"
+                  ? "shadow-none"
+                  : "shadow-sm shadow-neutral-300 bg-white"
+              } rounded-lg px-5 py-3`}
+            >
               <View className="flex flex-col items-start justify-start w-full">
                 <InputField
                   label="First name"
@@ -106,7 +140,6 @@ const Profile = () => {
                   inputStyle="p-3.5"
                   editable={false}
                 />
-
                 {/* <InputField
                   label="Phone"
                   placeholder={"Not Found"}

@@ -6,6 +6,8 @@ import Swiper from "react-native-swiper";
 
 import CustomButton from "@/components/CustomButton";
 import { onboarding } from "@/constants";
+import { useColorScheme } from "nativewind";
+import ThemeSwitcher from "@/components/ThemeSwitcher";
 
 const Home = () => {
   const swiperRef = useRef<Swiper>(null);
@@ -13,16 +15,30 @@ const Home = () => {
 
   const isLastSlide = activeIndex === onboarding.length - 1;
 
+  const { colorScheme } = useColorScheme();
+
   return (
-    <SafeAreaView className="flex h-full items-center justify-between bg-white">
-      <TouchableOpacity
-        onPress={() => {
-          router.replace("/(auth)/sign-up");
-        }}
-        className="w-full flex justify-end items-end p-5"
-      >
-        <Text className="text-black text-md font-JakartaBold">Skip</Text>
-      </TouchableOpacity>
+    <SafeAreaView
+      className={`flex h-full items-center justify-between ${
+        colorScheme === "dark" ? "bg-[#02050A]" : "bg-white"
+      }`}
+    >
+      <View className="w-full flex flex-row justify-between items-center p-5">
+        <ThemeSwitcher />
+        <TouchableOpacity
+          onPress={() => {
+            router.replace("/(auth)/sign-up");
+          }}
+        >
+          <Text
+            className={`text-md font-JakartaBold ${
+              colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+            }`}
+          >
+            Skip
+          </Text>
+        </TouchableOpacity>
+      </View>
 
       <Swiper
         ref={swiperRef}
@@ -31,7 +47,7 @@ const Home = () => {
           <View className="w-[32px] h-[4px] mx-1 bg-[#E2E8F0] rounded-full" />
         }
         activeDot={
-          <View className="w-[32px] h-[4px] mx-1 bg-[#0286FF] rounded-full" />
+          <View className="w-[32px] h-[4px] mx-1 bg-[#4646fc] rounded-full" />
         }
         onIndexChanged={(index) => setActiveIndex(index)}
       >
@@ -43,7 +59,11 @@ const Home = () => {
               resizeMode="contain"
             />
             <View className="flex flex-row items-center justify-center w-full mt-10">
-              <Text className="text-black text-3xl font-bold mx-10 text-center">
+              <Text
+                className={`text-black text-3xl font-JakartaBold mx-5 text-center ${
+                  colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+                }`}
+              >
                 {item.title}
               </Text>
             </View>

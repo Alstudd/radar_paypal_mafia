@@ -4,19 +4,10 @@ import React from "react";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 const Page = () => {
-  // const { isSignedIn } = useAuth();
-  const isProfileCompleted = false;
+  const { isSignedIn } = useAuth();
+  const isProfileCompleted = true;
 
-  // Get flashcard data from the server: if data then redirect to home else redirect to user flashcard form
-  // if (isSignedIn) {
-  //   if (data) {
-  //     return <Redirect href="/(root)/(tabs)/home" />;
-  //   } else {
-  //     return <Redirect href="/(root)/userFlashcardForm" />;
-  //   }
-  // }
-
-  if (GoogleSignin.getCurrentUser()) {
+  if (GoogleSignin.getCurrentUser() || isSignedIn) {
     if (isProfileCompleted) {
       return <Redirect href="/(root)/(tabs)/home" />;
     } else {
