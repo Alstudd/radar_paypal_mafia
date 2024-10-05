@@ -1,6 +1,7 @@
 import { TouchableOpacity, Text } from "react-native";
 
 import { ButtonProps } from "@/types/type";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 const getBgVariantStyle = (variant: ButtonProps["bgVariant"]) => {
   switch (variant) {
@@ -49,14 +50,16 @@ const OktoApiButton = ({
   return (
     <TouchableOpacity
       onPress={() => {
-        apiFn()
-          .then((result) => {
-            console.log(`${title}:`, result);
-            setterFn(result);
-          })
-          .catch((error) => {
-            console.error(`${title} error:`, error);
-          });
+        if (GoogleSignin.getCurrentUser()) {
+          apiFn()
+            .then((result) => {
+              console.log(`${title}:`, result);
+              setterFn(result);
+            })
+            .catch((error) => {
+              console.error(`${title} error:`, error);
+            });
+        }
       }}
       className={`w-full rounded-full p-3 flex flex-row justify-center items-center shadow-md shadow-neutral-400/70 ${getBgVariantStyle(
         bgVariant

@@ -130,35 +130,6 @@ const UserFlashcardForm = () => {
     transferTokensWithJobStatus,
   } = useOkto() as OktoContextType;
   const [portfolio, setPortfolio] = useState<Portfolio[]>([]);
-  const [wallets, setWallets] = useState<Wallet[]>([]);
-
-  const [networkName, setNetworkName] = useState("POLYGON_TESTNET");
-  const [tokenAddress, setTokenAddress] = useState("x2f7b97837f2d14ba2ed3a4b2282e259126a9b848");
-  const [quantity, setQuantity] = useState("1");
-  const [recipientAddress, setRecipientAddress] = useState(
-    "0x0FC096A53343C68c1086e626661A4bb31486A9e2"
-  );
-
-  const handleSubmitTransferTokensWithJobStatus = () => {
-    console.log("Calling transfer funds: ", {
-      networkName,
-      tokenAddress,
-      recipientAddress,
-      quantity,
-    });
-    transferTokensWithJobStatus({
-      network_name: networkName,
-      token_address: tokenAddress,
-      recipient_address: recipientAddress,
-      quantity,
-    })
-      .then((result) => {
-        console.log("Transfer success", result);
-      })
-      .catch((error) => {
-        console.log("Transfer error", error);
-      });
-  };
 
   // GoogleSignin.configure({});
   GoogleSignin.configure({
@@ -902,65 +873,6 @@ const UserFlashcardForm = () => {
                   />
                 )}
               />
-              <OktoApiButton
-                title="Get Portfolio"
-                apiFn={() => getWallets()}
-                setterFn={setWallets}
-                className="mt-5"
-                IconLeft={() => (
-                  <Image
-                    source={icons.list}
-                    resizeMode="contain"
-                    className="w-5 h-5 mx-2"
-                  />
-                )}
-              />
-              <CustomButton className="mt-5 mx-auto" title="Create" onPress={makeWallet} />
-              {/* <InputField
-                label="Network Name"
-                placeholder="Enter network name"
-                value={networkName}
-                onChangeText={(value) => setNetworkName(value)}
-                useExpoVectorIcons={true}
-                icon="person-outline"
-              />
-              <InputField
-                label="Token Address"
-                placeholder="Enter token address"
-                value={tokenAddress}
-                onChangeText={(value) => setTokenAddress(value)}
-                useExpoVectorIcons={true}
-                icon="mail-outline"
-              />
-              <InputField
-                label="Quantity"
-                placeholder="Enter quantity"
-                value={quantity}
-                onChangeText={(value) => setQuantity(value)}
-                useExpoVectorIcons={true}
-                icon="laptop-chromebook"
-              />
-              <InputField
-                label="Recipient Address"
-                placeholder="Enter recipient address"
-                value={recipientAddress}
-                onChangeText={(value) => setRecipientAddress(value)}
-                useExpoVectorIcons={true}
-                icon="info-outline"
-              />
-          
-            <CustomButton
-            title="Transfer Tokens"
-            onPress={handleSubmitTransferTokensWithJobStatus}
-            className="mt-5"
-            IconLeft={() => (
-              <Image
-                source={icons.list}
-                resizeMode="contain"
-                className="w-5 h-5 mx-2"
-              />
-            )}
-          /> */}
             </View>
             </View>
           )}

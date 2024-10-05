@@ -9,9 +9,10 @@ import {
   GoogleSignin,
   type ConfigureParams,
 } from "@react-native-google-signin/google-signin";
-import { useOkto, type OktoContextType } from "okto-sdk-react-native";
+import { useOkto, Wallet, type OktoContextType } from "okto-sdk-react-native";
 import { fetchAPI } from "@/lib/fetch";
 import { useColorScheme } from "nativewind";
+import { useState } from "react";
 
 const webClientId =
   "328551301503-nq398rv0ff8nrubpu8l71avde3c0h78e.apps.googleusercontent.com";
@@ -30,7 +31,19 @@ const OAuth = ({ title }: { title: string }) => {
     Alert.alert(result.success ? "Success" : "Error", result.message);
   };
 
-  const { authenticate } = useOkto() as OktoContextType;
+  const { authenticate, createWallet } = useOkto() as OktoContextType;
+  const [wallets, setWallets] = useState<Wallet[]>([]);
+
+  const makeWallet = async () => {
+    try {
+      const result: any = await createWallet();
+      console.log("Wallets created:", result);
+      setWallets(result.wallets);
+    } catch (error) {
+      console.error("Error making wallets:", error);
+    }
+  };
+
   async function handleGoogleSignInUsingOkto() {
     try {
       GoogleSignin.configure({
@@ -71,6 +84,7 @@ const OAuth = ({ title }: { title: string }) => {
       const { idToken } = response.data;
       authenticate(idToken, (result, error) => {
         if (result) {
+          makeWallet();
           console.log("authentication successful");
           Alert.alert(
             "Success",

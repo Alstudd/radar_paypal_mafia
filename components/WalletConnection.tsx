@@ -25,10 +25,13 @@ import {
   Network,
   OktoContextType,
   Portfolio,
+  PortfolioData,
   Token,
   useOkto,
+  Wallet,
 } from "okto-sdk-react-native";
 import { useColorScheme } from "nativewind";
+import PortfolioCard from "./PortfolioCard";
 
 const webClientId =
   "328551301503-nq398rv0ff8nrubpu8l71avde3c0h78e.apps.googleusercontent.com";
@@ -36,9 +39,20 @@ const webClientId =
 const WalletConnection = () => {
   const { colorScheme } = useColorScheme();
   const { signOut } = useAuth();
-  const { showWidgetSheet, setTheme, authenticate, getPortfolio } =
-    useOkto() as OktoContextType;
+  const {
+    showWidgetSheet,
+    setTheme,
+    authenticate,
+    getPortfolio,
+    getSupportedNetworks,
+    getSupportedTokens,
+    createWallet,
+    getWallets,
+  } = useOkto() as OktoContextType;
   const [portfolio, setPortfolio] = useState<Portfolio[]>([]);
+  const [networks, setNetworks] = useState<Network[]>([]);
+  const [tokens, setTokens] = useState<Token[]>([]);
+  const [wallets, setWallets] = useState<Wallet[]>([]);
 
   setTheme({
     textPrimaryColor: colorScheme === "dark" ? "0xFFFFFFFF" : "0xFF616161",
@@ -62,6 +76,45 @@ const WalletConnection = () => {
     }
   };
 
+  const fetchSupportedNetworks = async () => {
+    try {
+      const result: any = await getSupportedNetworks();
+      setNetworks(result);
+      console.log("Supported Networks fetched:", result);
+    } catch (error) {
+      console.error("Error fetching supported networks:", error);
+    }
+  };
+
+  const fetchSupportedTokens = async () => {
+    try {
+      const result: any = await getSupportedTokens();
+      setTokens(result);
+      console.log("Supported Tokens fetched:", result);
+    } catch (error) {
+      console.error("Error fetching supported tokens:", error);
+    }
+  };
+
+  const fetchWallets = async () => {
+    try {
+      const result: any = await getWallets();
+      setWallets(result.wallets);
+      console.log("Wallets fetched:", result);
+    } catch (error) {
+      console.error("Error fetching wallets:", error);
+    }
+  };
+
+  const makeWallet = async () => {
+    try {
+      const result: any = await createWallet();
+      console.log("Wallets created:", result);
+    } catch (error) {
+      console.error("Error making wallets:", error);
+    }
+  };
+
   async function handleGoogleSignInUsingOkto() {
     try {
       GoogleSignin.configure({
@@ -78,6 +131,7 @@ const WalletConnection = () => {
       const { idToken } = response.data;
       authenticate(idToken, (result, error) => {
         if (result) {
+          makeWallet();
           console.log("authentication successful");
           signOut();
           console.log("Clerk sign-out successful");
@@ -115,6 +169,9 @@ const WalletConnection = () => {
         setTimeout(() => {
           showWidgetSheet();
           fetchPortfolio();
+          fetchSupportedNetworks();
+          fetchSupportedTokens();
+          fetchWallets();
         }, 3000);
       }
     } catch (error) {
@@ -126,13 +183,66 @@ const WalletConnection = () => {
     const user = GoogleSignin.getCurrentUser();
     if (user) {
       fetchPortfolio();
+      fetchSupportedNetworks();
+      fetchSupportedTokens();
+      fetchWallets();
     }
   }, []);
+
+  //   const dummyPortfolioData: PortfolioData = {
+  //     total: 2532075,
+  //     tokens: [
+  //       {
+  //         token_name: "Bitcoin",
+  //         token_image: "https://cryptologos.cc/logos/bitcoin-btc-logo.png?v=025",
+  //         token_address: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+  //         network_name: "Bitcoin",
+  //         quantity: "0.5",
+  //         amount_in_inr: "1500000",
+  //       },
+  //       {
+  //         token_name: "Ethereum",
+  //         token_image: "https://cryptologos.cc/logos/ethereum-eth-logo.png?v=025",
+  //         token_address: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+  //         network_name: "Ethereum",
+  //         quantity: "2.0",
+  //         amount_in_inr: "340075",
+  //       },
+  //       {
+  //         token_name: "Solana",
+  //         token_image: "https://cryptologos.cc/logos/solana-sol-logo.png?v=025",
+  //         token_address: "3n21wGM7y3bLL5nrh23DLuBwF9j6g12XeFBw28c91",
+  //         network_name: "Solana",
+  //         quantity: "50",
+  //         amount_in_inr: "100000",
+  //       },
+  //       {
+  //         token_name: "USD Coin",
+  //         token_image: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=025",
+  //         token_address: "0xA0b86991c6218b36c1d19d4a2e9Eb0cE3606eb48",
+  //         network_name: "Ethereum",
+  //         quantity: "5000",
+  //         amount_in_inr: "500000",
+  //       },
+  //       {
+  //         token_name: "Polygon",
+  //         token_image: "https://cryptologos.cc/logos/polygon-matic-logo.png?v=025",
+  //         token_address: "0x0000000000000000000000000000000000000000",
+  //         network_name: "Polygon",
+  //         quantity: "3000",
+  //         amount_in_inr: "92000",
+  //       },
+  //     ],
+  //   };
 
   return (
     <View>
       <CustomButton
-        title="Connect Wallet"
+        title={
+          GoogleSignin.getCurrentUser()
+            ? "View Okto Wallet"
+            : "Connect Okto Wallet"
+        }
         onPress={connect}
         className="mt-5"
         IconLeft={() => (
@@ -143,6 +253,7 @@ const WalletConnection = () => {
           />
         )}
       />
+      {/* <PortfolioCard portfolio={dummyPortfolioData} /> */}
     </View>
   );
 };
