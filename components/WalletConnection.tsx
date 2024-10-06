@@ -28,6 +28,7 @@ import {
 import { useColorScheme } from "nativewind";
 import PortfolioCard from "./PortfolioCard";
 import InputField from "./InputField";
+import { Entypo, FontAwesome6 } from "@expo/vector-icons";
 
 const webClientId =
   "328551301503-nq398rv0ff8nrubpu8l71avde3c0h78e.apps.googleusercontent.com";
@@ -53,14 +54,17 @@ const WalletConnection = () => {
   });
   const [networks, setNetworks] = useState<Network[]>([]);
   const [tokens, setTokens] = useState<Token[]>([]);
+  const [filteredTokens, setFilteredTokens] = useState<Token[]>([]); // New state for filtered tokens
   const [wallets, setWallets] = useState<Wallet[]>([]);
 
   const [networkName, setNetworkName] = useState("SOLANA_DEVNET");
-  const [tokenAddress, setTokenAddress] = useState("");
+  const [token, setToken] = useState<any>({
+    network_name: "SOLANA_DEVNET",
+    token_address: "",
+    token_name: "SOL_DEVNET",
+  });
   const [quantity, setQuantity] = useState("0.1");
-  const [recipientAddress, setRecipientAddress] = useState(
-    "8TbEbss9hqzEceq52gceMr7cqGVKwRrXqKQegYb4CNkr"
-  );
+  const [recipientAddress, setRecipientAddress] = useState("");
 
   setTheme({
     textPrimaryColor: colorScheme === "dark" ? "0xFFFFFFFF" : "0xFF616161",
@@ -99,6 +103,7 @@ const WalletConnection = () => {
       const result: any = await getSupportedTokens();
       setTokens(result.tokens);
       console.log("Supported Tokens fetched:", result);
+      //   filterTokensByNetwork(networkName);
     } catch (error) {
       console.error("Error fetching supported tokens:", error);
     }
@@ -123,6 +128,12 @@ const WalletConnection = () => {
     }
   };
 
+  const filterTokensByNetwork = (network: string) => {
+    const filtered = tokens.filter((token) => token.network_name === network);
+    setFilteredTokens(filtered);
+    setToken(filtered[0]);
+  };
+
   const handleGoogleSignInUsingOkto = async () => {
     try {
       GoogleSignin.configure({
@@ -139,7 +150,6 @@ const WalletConnection = () => {
       const { idToken } = response.data;
       authenticate(idToken, (result, error) => {
         if (result) {
-          makeWallet();
           makeWallet();
           console.log("authentication successful");
           signOut();
@@ -184,10 +194,14 @@ const WalletConnection = () => {
     }
   }, []);
 
+  React.useEffect(() => {
+    filterTokensByNetwork(networkName);
+  }, [networkName, tokens]);
+
   const handleSubmitTransferTokens = () => {
     transferTokens({
       network_name: networkName,
-      token_address: tokenAddress,
+      token_address: token.token_address,
       recipient_address: recipientAddress,
       quantity: quantity,
     })
@@ -211,11 +225,9 @@ const WalletConnection = () => {
         onPress={connect}
         className="mt-5"
         IconLeft={() => (
-          <Image
-            source={icons.list}
-            resizeMode="contain"
-            className="w-5 h-5 mx-2 mt-1"
-          />
+          <View className="mr-2 mt-1">
+            <Entypo name="wallet" size={20} color="#fff" />
+          </View>
         )}
       />
       {portfolio.tokens.length > 0 && (
@@ -229,7 +241,7 @@ const WalletConnection = () => {
               >
                 Your Okto Portfolio
               </Text>
-              <PortfolioCard portfolio={portfolio} />
+              <PortfolioCard portfolio={portfolio} wallets={wallets} />
             </View>
           )}
           <Text
@@ -240,66 +252,103 @@ const WalletConnection = () => {
             Transfer Tokens
           </Text>
 
-          {/* Picker for Network Name */}
-          <Text className="font-JakartaSemiBold text-[16px]">Network Name</Text>
-          <Picker
-            selectedValue={networkName}
-            onValueChange={(itemValue: any) => setNetworkName(itemValue)}
+          <Text
+            className={`font-JakartaSemiBold text-[16px] my-4 ${
+              colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+            }`}
           >
-            {networks.map((network) => (
-              <Picker.Item
-                key={network.network_name}
-                label={network.network_name}
-                value={network.network_name}
-              />
-            ))}
-          </Picker>
+            Network Name
+          </Text>
+          <View
+            className={`rounded-full border border-neutral-100 focus:border-[#536dfe] py-[3px] ${
+              colorScheme === "dark" ? "bg-[#02050A]" : "bg-neutral-100"
+            }`}
+          >
+            <Picker
+              dropdownIconColor={colorScheme === "dark" ? "#fff" : "#02050A"}
+              style={{ color: colorScheme === "dark" ? "#fff" : "#02050A" }}
+              selectedValue={networkName}
+              onValueChange={(itemValue: any) => setNetworkName(itemValue)}
+            >
+              {networks.map((network) => (
+                <Picker.Item
+                  key={network.network_name}
+                  label={network.network_name}
+                  value={network.network_name}
+                />
+              ))}
+            </Picker>
+          </View>
 
-          {/* Picker for Token Address */}
-          <Text className="font-JakartaSemiBold text-[16px]">
+          <Text
+            className={`font-JakartaSemiBold text-[16px] my-4 ${
+              colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+            }`}
+          >
             Token Address
           </Text>
-          <Picker
-            selectedValue={tokenAddress}
-            onValueChange={(itemValue: any) => {
-              setTokenAddress(itemValue);
-            }}
+          <View
+            className={`rounded-full border border-neutral-100 focus:border-[#536dfe] py-[3px] ${
+              colorScheme === "dark" ? "bg-[#02050A]" : "bg-neutral-100"
+            }`}
           >
-            {tokens.map((token) => (
-              <Picker.Item
-                key={token.token_address}
-                label={token.token_name}
-                value={token.token_address}
-              />
-            ))}
-          </Picker>
+            <Picker
+              dropdownIconColor={colorScheme === "dark" ? "#fff" : "#02050A"}
+              style={{ color: colorScheme === "dark" ? "#fff" : "#02050A" }}
+              selectedValue={token}
+              onValueChange={(itemValue: any) => {
+                setToken(itemValue);
+              }}
+            >
+              {filteredTokens.map((token, index) => (
+                <Picker.Item
+                  key={index}
+                  label={token.token_name}
+                  value={token}
+                />
+              ))}
+            </Picker>
+          </View>
 
+          <Text
+            className={`font-JakartaSemiBold text-[16px] mt-4 mb-2 ${
+              colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+            }`}
+          >
+            Quantity
+          </Text>
           <InputField
-            label="Quantity"
-            placeholder="Enter quantity"
             value={quantity}
-            onChangeText={setQuantity}
-            useExpoVectorIcons={true}
-            icon="person-outline"
+            onChangeText={(text) => setQuantity(text)}
+            placeholder="Enter quantity"
+            keyboardType="numeric"
           />
+
+          <Text
+            className={`font-JakartaSemiBold text-[16px] mt-4 mb-2 ${
+              colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+            }`}
+          >
+            Recipient Address
+          </Text>
           <InputField
-            label="Recipient Address"
-            placeholder="Enter recipient address"
             value={recipientAddress}
-            onChangeText={setRecipientAddress}
-            useExpoVectorIcons={true}
-            icon="person-outline"
+            onChangeText={(text) => setRecipientAddress(text)}
+            placeholder="Enter recipient address"
           />
+
           <CustomButton
-            className="mx-auto mt-5"
             title="Transfer Tokens"
             onPress={handleSubmitTransferTokens}
+            className="mt-4"
             IconLeft={() => (
-              <Image
-                source={icons.chevronRight}
-                resizeMode="contain"
-                className="w-5 h-5"
-              />
+              <View className="mr-2 mt-1">
+                <FontAwesome6
+                  name="money-bill-transfer"
+                  size={20}
+                  color="#fff"
+                />
+              </View>
             )}
           />
         </View>
@@ -309,11 +358,3 @@ const WalletConnection = () => {
 };
 
 export default WalletConnection;
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});

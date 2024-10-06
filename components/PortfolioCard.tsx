@@ -6,16 +6,19 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
-  Animated,
+  Modal,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useColorScheme } from "nativewind";
 import CustomButton from "@/components/CustomButton"; // Your existing custom button
 import { Entypo, Ionicons } from "@expo/vector-icons"; // For icons
 import { Portfolio, useOkto } from "okto-sdk-react-native";
+import { router } from "expo-router";
+import Wallets from "./Wallets";
 
-const PortfolioCard = ({ portfolio }: any) => {
+const PortfolioCard = ({ portfolio, wallets }: any) => {
   const { colorScheme } = useColorScheme();
+  const [open, setOpen] = useState(false);
 
   const renderTokenItem = ({ item }: any) => (
     <View style={styles.tokenContainer}>
@@ -75,7 +78,7 @@ const PortfolioCard = ({ portfolio }: any) => {
   );
 
   return (
-    <Animated.View style={{ ...styles.cardContainer }}>
+    <View style={{ ...styles.cardContainer }}>
       <LinearGradient
         className="border border-neutral-100 p-[20px] rounded-[20px]"
         colors={
@@ -110,16 +113,24 @@ const PortfolioCard = ({ portfolio }: any) => {
           scrollEnabled={false}
         />
 
-        <TouchableOpacity style={styles.actionButton}>
+        <TouchableOpacity onPress={() => setOpen(true)} style={styles.actionButton}>
           <Text className="font-JakartaBold" style={styles.actionText}>
-            View Details
+            View Wallets
           </Text>
           <View className="mt-1">
             <Ionicons name="chevron-forward-outline" size={16} color="#fff" />
           </View>
         </TouchableOpacity>
       </LinearGradient>
-    </Animated.View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={open}
+        onRequestClose={() => setOpen(false)}
+      >
+        <Wallets wallets={wallets} setOpen={setOpen} />
+      </Modal>
+    </View>
   );
 };
 

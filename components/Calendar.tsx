@@ -163,19 +163,9 @@ export default function Calendar({
           Age: {calculateAge(selectDate)} years
         </Text>
       </View>
-      <View className="absolute top-0 right-0 left-0 flex flex-row justify-between items-center mx-8 mt-5">
-        <TouchableOpacity
-          className="flex flex-row items-center gap-2"
-          onPress={() => {
-            setDate(selectDate.toDate());
-            setOpen(false);
-          }}
-        >
-          <Icon
-            name="calendar-outline"
-            size={40}
-            color={"#4646fc"}
-          />
+      <View className="absolute top-0 right-0 left-0 flex flex-row justify-between items-center mx-9 mt-4">
+        <View className="flex flex-row items-center gap-2">
+          <Icon name="calendar-outline" size={40} color={"#4646fc"} />
           <Text
             className={`font-JakartaBold text-[18px] ${
               colorScheme === "dark" ? "text-white" : "text-[#02050A]"
@@ -183,25 +173,21 @@ export default function Calendar({
           >
             Date Of Birth
           </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            setDate(selectDate.toDate());
-            setOpen(false);
-          }}
-          className="flex flex-row gap-5 items-center"
-        >
+        </View>
+        <View className="flex flex-row gap-3 items-center">
           <View>
             <ThemeSwitcher />
           </View>
-          <View className="bg-[#FF5E5E] rounded-[30px] p-[2px]">
-          <Icon
-            name="close-sharp"
-            size={36}
-            color={"#fff"}
-          />
-          </View>
-        </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              setDate(selectDate.toDate());
+              setOpen(false);
+            }}
+            className="bg-[#FF5E5E] rounded-[30px] p-[2px]"
+          >
+            <Icon name="close-sharp" size={36} color={"#fff"} />
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
