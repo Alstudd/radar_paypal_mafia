@@ -35,13 +35,19 @@ const OAuth = ({ title }: { title: string }) => {
   const [wallets, setWallets] = useState<Wallet[]>([]);
 
   const makeWallet = async () => {
-    try {
-      const result: any = await createWallet();
-      console.log("Wallets created:", result);
-      setWallets(result.wallets);
-    } catch (error) {
-      console.error("Error making wallets:", error);
-    }
+    // try {
+    //   const result: any = await createWallet();
+    //   console.log("Wallets created:", result);
+    // } catch (error) {
+    //   console.error("Error making wallets:", error);
+    // }
+    createWallet()
+      .then((result) => {
+        console.log("Wallets created:", result);
+      })
+      .catch((error) => {
+        console.error("Error making wallets:", error);
+      });
   };
 
   async function handleGoogleSignInUsingOkto() {
@@ -86,7 +92,6 @@ const OAuth = ({ title }: { title: string }) => {
         if (result) {
           makeWallet();
           makeWallet();
-          console.log(result);
           console.log("authentication successful");
           Alert.alert(
             "Success",

@@ -10,8 +10,6 @@ import {
 } from "@solana-mobile/mobile-wallet-adapter-protocol-web3js";
 import CustomButton from "@/components/CustomButton";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { OktoContextType, useOkto } from "okto-sdk-react-native";
 import { useColorScheme } from "nativewind";
 
 export const APP_IDENTITY = {
@@ -26,100 +24,20 @@ const webClientId =
 const home = () => {
   const { colorScheme } = useColorScheme();
   const { user } = useUser();
-  const { signOut } = useAuth();
-  const { logOut, showWidgetSheet, setTheme } = useOkto() as OktoContextType;
-  setTheme({
-    textPrimaryColor: colorScheme === "dark" ? '0xFFFFFFFF': '0xFF616161',
-    textSecondaryColor: colorScheme === "dark" ? '0xFFFFFFFF': '0xFF616161',
-    textTertiaryColor: colorScheme === "dark" ? '0xFFFFFFFF': '0xFF616161',
-    accent1Color: '0x80433454',
-    accent2Color: '0x80905BF5',
-    strokeBorderColor: '0xFFACACAB',
-    strokeDividerColor: '0x4DA8A8A8',
-    surfaceColor: '0xFF1F0A2F',
-    backgroundColor: colorScheme === "dark" ? '0xFF000000' : '0xFFFFFFFF',
-  });
-
-  GoogleSignin.configure({});
-
-  const handleSignOut = async () => {
-    try {
-      if (GoogleSignin.getCurrentUser()) {
-        await GoogleSignin.revokeAccess();
-        await GoogleSignin.signOut();
-        console.log("Google sign-out successful");
-
-        await logOut();
-        console.log("Okto sign-out successful");
-      } else {
-        signOut();
-        console.log("Clerk sign-out successful");
-      }
-      router.replace("/(auth)/sign-in");
-    } catch (error) {
-      console.error("Error during sign-out:", error);
-    }
-  };
-
-  const { authenticate } = useOkto() as OktoContextType;
-  async function handleGoogleSignInUsingOkto() {
-    try {
-      GoogleSignin.configure({
-        scopes: ["email", "profile"],
-        webClientId,
-      });
-      await GoogleSignin.hasPlayServices();
-      const response: any = await GoogleSignin.signIn();
-      if (!response.data) {
-        console.log("Google sign-in failed");
-        return;
-      }
-
-      const { idToken } = response.data;
-      authenticate(idToken, (result, error) => {
-        if (result) {
-          console.log("authentication successful");
-          signOut();
-          console.log("Clerk sign-out successful");
-        }
-        if (error) {
-          console.error("authentication error:", error);
-        }
-      });
-    } catch (error) {
-      console.log(error);
-      console.log("Something went wrong. Please try again");
-    }
-  }
-
-  // const connect = async () => {
-  //   const authorizationResult = await transact(
-  //     async (wallet: Web3MobileWallet) => {
-  //       const authorizationResult = await wallet.authorize({
-  //         chain: "solana:devnet",
-  //         identity: APP_IDENTITY,
-  //       });
-  //       return authorizationResult;
-  //     }
-  //   );
-
-  //   console.log("Connected to: " + authorizationResult.accounts[0].address);
-  // };
 
   const connect = async () => {
-    try {
-      if (!GoogleSignin.getCurrentUser()) {
-        await handleGoogleSignInUsingOkto();
+    const authorizationResult = await transact(
+      async (wallet: Web3MobileWallet) => {
+        const authorizationResult = await wallet.authorize({
+          chain: "solana:devnet",
+          identity: APP_IDENTITY,
+        });
+        return authorizationResult;
       }
-      if (GoogleSignin.getCurrentUser()) {
-        setTimeout(() => {
-          showWidgetSheet();
-        }, 3000);
-      }
-    } catch (error) {
-      console.error("Error during sign-in:", error);
-    }
-  }
+    );
+
+    console.log("Connected to: " + authorizationResult.accounts[0].address);
+  };
 
   return (
     <SafeAreaView className={`${colorScheme === 'dark' ? 'bg-[#02050A]' : 'bg-white'} h-full`}>
