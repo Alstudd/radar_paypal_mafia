@@ -18,9 +18,6 @@ export const APP_IDENTITY = {
   icon: "favicon.ico",
 };
 
-const webClientId =
-  "328551301503-nq398rv0ff8nrubpu8l71avde3c0h78e.apps.googleusercontent.com";
-
 const home = () => {
   const { colorScheme } = useColorScheme();
   const { user } = useUser();

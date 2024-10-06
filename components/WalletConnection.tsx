@@ -65,7 +65,9 @@ const WalletConnection = () => {
     token_name: "SOL_DEVNET",
   });
   const [quantity, setQuantity] = useState("0.1");
-  const [recipientAddress, setRecipientAddress] = useState("8TbEbss9hqzEceq52gceMr7cqGVKwRrXqKQegYb4CNkr");
+  const [recipientAddress, setRecipientAddress] = useState(
+    "8TbEbss9hqzEceq52gceMr7cqGVKwRrXqKQegYb4CNkr"
+  );
 
   setTheme({
     textPrimaryColor: colorScheme === "dark" ? "0xFFFFFFFF" : "0xFF616161",
@@ -257,11 +259,21 @@ const WalletConnection = () => {
         }
         onPress={connect}
         className="mt-5"
-        IconLeft={() => (
-          <View className="mr-2 mt-1">
-            <Entypo name="wallet" size={20} color="#fff" />
-          </View>
-        )}
+        IconLeft={() =>
+          GoogleSignin.getCurrentUser() ? (
+            <Image
+              source={{
+                uri: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAe1BMVEVHcExaffVaV/JYWPFhR/ReTfNYfPVYePRYX/JaU/JLTvCZmfGzwPausPRwc/BXV/HIzvf////d4/pVXvDx8/x7ie9QY+5Qbe+SqPNSe/FSefE3bu54nvJShPJDgvJSkPRUofZTk/NUmfRUofZVqvdVsPhVrvhVsPhVtPgMivcQAAAAKXRSTlMAHYu/5P9FMGT+/v7+/v7////////+/v/+uv7+/v/+/5Su/v9zvf/x2M1XqKwAAAEVSURBVHgBbYyHFoMgDADjVooT9+7u/39hQ9B0ngO4ewEYy3Zcz3Md24dvfAyM/dkc75MAGIslE75aRA+DB67RjieE4L1PzdmOIjpIGSecAQlSg8hyokiEEbYeTFOFW1XmOwdhFEZFCG5IlZILITRNbr7Um1iQdMBWqla1yDeyWv8SdKquwak1Vf5BJtBxPHzGYo8NUrdfsW400NGC18rs7dot2r2maYemyJmxIQthTww4V4y9aeVArgOYiLksxqEt8UY92JMLAbqtziNqOQ9l3s5GAUCwENPUYlokXj4bswJypO3ptKAc5WleTiYCcfqLb6J1Pp9P9LyW8wWA6yfciOvtg3sA7/iPt8ZjjHW5PnDmsfqsnl/EMWq89M3aAAAAAElFTkSuQmCC",
+              }}
+              resizeMode="contain"
+              className="w-6 h-6 mx-2 mt-1"
+            />
+          ) : (
+            <View className="mx-2 mt-1">
+              <Entypo name="wallet" size={20} color="#fff" />
+            </View>
+          )
+        }
       />
       <View className="mt-6">
         <View>

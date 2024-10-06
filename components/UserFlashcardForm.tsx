@@ -46,6 +46,7 @@ import {
 import ThemeSwitcher from "./ThemeSwitcher";
 import WalletConnection from "./WalletConnection";
 import OktoApiButton from "./OktoApiButton";
+import SolanaWallet from "./SolanaWallet";
 
 const steps = [
   { id: 1, title: "Basic Details" },
@@ -117,21 +118,15 @@ const UserFlashcardForm = () => {
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
 
+  const [connected, setConnected] = useState(false);
+  const [walletAddress, setWalletAddress] = useState("");
+
   const { colorScheme } = useColorScheme();
 
   const progressAnimation = useState(new Animated.Value(0))[0];
 
   const { signOut } = useAuth();
-  const {
-    logOut,
-    getPortfolio,
-    createWallet,
-    getWallets,
-    transferTokensWithJobStatus,
-    transferTokens,
-  } = useOkto() as OktoContextType;
-
-  const [portfolio, setPortfolio] = useState<Portfolio[]>([]);
+  const { logOut } = useOkto() as OktoContextType;
 
   // GoogleSignin.configure({});
   GoogleSignin.configure({
@@ -844,6 +839,12 @@ const UserFlashcardForm = () => {
 
           {currentStep === 8 && (
             <View>
+              <SolanaWallet
+                connected={connected}
+                walletAddress={walletAddress}
+                setConnected={setConnected}
+                setWalletAddress={setWalletAddress}
+              />
               {/* <InputField
                 label="Blockchain Wallet"
                 placeholder="Enter wallet address"

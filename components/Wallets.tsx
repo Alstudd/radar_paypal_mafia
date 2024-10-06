@@ -30,7 +30,7 @@ export default function Wallets({ wallets, setOpen }: any) {
       entering={FadeIn.duration(600)}
       exiting={FadeOut.duration(600)}
       style={styles.walletContainer}
-    >   
+    >
       <LinearGradient
         colors={isDark ? ["#1f1f3d", "#3b3b98"] : ["#4646fc", "#6e8efb"]}
         style={styles.gradient}
@@ -41,7 +41,8 @@ export default function Wallets({ wallets, setOpen }: any) {
               className="font-JakartaBold text-[16px]"
               style={[
                 styles.networkName,
-                isDark ? styles.textWhite : styles.textDark,
+                styles.textWhite,
+                // isDark ? styles.textWhite : styles.textDark,
               ]}
             >
               {item.network_name}
@@ -55,11 +56,7 @@ export default function Wallets({ wallets, setOpen }: any) {
             </Text>
           </View>
           <TouchableOpacity onPress={() => copyToClipboard(item.address)}>
-            <Icon
-              name="wallet-outline"
-              size={36}
-              color={isDark ? "#fff" : "#02050A"}
-            />
+            <Icon name="wallet-outline" size={36} color={"#fff"} />
           </TouchableOpacity>
         </View>
       </LinearGradient>
