@@ -7,6 +7,8 @@ const Layout = () => {
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="discussion" options={{ headerShown: false }} />
       <Stack.Screen name="userFlashcardForm" options={{ headerShown: false }} />
+      <Stack.Screen name="txStatus" options={{ headerShown: false }} />
+      <Stack.Screen name="orderDetails" options={{ headerShown: false }} />
     </Stack>
   );
 };

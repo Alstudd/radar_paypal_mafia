@@ -56,7 +56,7 @@ const steps = [
   { id: 6, title: "Achievements" },
   { id: 7, title: "Documents" },
   { id: 8, title: "Investment Preferences" },
-  { id: 9, title: "Blockchain Wallet" },
+  { id: 9, title: "Wallet Connection" },
 ];
 
 const avatarImages = [
@@ -128,7 +128,9 @@ const UserFlashcardForm = () => {
     createWallet,
     getWallets,
     transferTokensWithJobStatus,
+    transferTokens,
   } = useOkto() as OktoContextType;
+
   const [portfolio, setPortfolio] = useState<Portfolio[]>([]);
 
   // GoogleSignin.configure({});
@@ -315,16 +317,6 @@ const UserFlashcardForm = () => {
       setResume(result);
     }
   };
-
-  const makeWallet = () => {
-    createWallet()
-        .then((result) => {
-            console.log(result)
-        })
-        .catch((error) => {
-            console.error(`error:`, error);
-        });
-  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -852,7 +844,6 @@ const UserFlashcardForm = () => {
 
           {currentStep === 8 && (
             <View>
-              <View>
               {/* <InputField
                 label="Blockchain Wallet"
                 placeholder="Enter wallet address"
@@ -860,7 +851,7 @@ const UserFlashcardForm = () => {
                 onChangeText={(value) => handleChange("walletAddress", value)}
               /> */}
               <WalletConnection />
-              <OktoApiButton
+              {/* <OktoApiButton
                 title="Get Portfolio"
                 apiFn={() => getPortfolio()}
                 setterFn={setPortfolio}
@@ -872,8 +863,7 @@ const UserFlashcardForm = () => {
                     className="w-5 h-5 mx-2"
                   />
                 )}
-              />
-            </View>
+              /> */}
             </View>
           )}
         </View>

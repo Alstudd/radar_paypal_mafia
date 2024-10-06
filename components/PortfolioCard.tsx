@@ -11,52 +11,94 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { useColorScheme } from "nativewind";
 import CustomButton from "@/components/CustomButton"; // Your existing custom button
-import { Ionicons } from "@expo/vector-icons"; // For icons
+import { Entypo, Ionicons } from "@expo/vector-icons"; // For icons
 import { Portfolio, useOkto } from "okto-sdk-react-native";
 
 const PortfolioCard = ({ portfolio }: any) => {
   const { colorScheme } = useColorScheme();
-  const [fadeAnim] = useState(new Animated.Value(0));
-
-  React.useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 500,
-      useNativeDriver: true,
-    }).start();
-  }, []);
 
   const renderTokenItem = ({ item }: any) => (
     <View style={styles.tokenContainer}>
-      <Image source={{ uri: item.token_image }} style={styles.tokenLogo} />
+      {item.token_image ? (
+        <Image source={{ uri: item.token_image }} style={styles.tokenLogo} />
+      ) : item.network_name === "SOLANA_DEVNET" ||
+        item.network_name === "SOLANA" ? (
+        <Image
+          source={{
+            uri: "https://cdn-icons-png.flaticon.com/512/6001/6001527.png",
+          }}
+          style={styles.tokenLogo}
+        />
+      ) : (
+        <Entypo name={"wallet"} size={40} color={"#4646fc"} />
+      )}
       <View style={styles.tokenDetails}>
-        <Text style={styles.tokenName}>{item.token_name}</Text>
-        <Text numberOfLines={1} className="truncate" style={styles.tokenAmount}>
-          {item.token_address}
+        <Text
+          className={`${
+            colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+          } font-JakartaBold`}
+          style={styles.tokenName}
+        >
+          {item.token_name}
         </Text>
+        {item.token_address && (
+          <Text
+            className={`${
+              colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+            } truncate font-JakartaMedium`}
+            numberOfLines={1}
+            style={styles.tokenAmount}
+          >
+            {item.token_address}
+          </Text>
+        )}
       </View>
       <View className="flex flex-col">
-        <Text style={styles.tokenValue}>{item.amount_in_inr} INR</Text>
-        <Text style={styles.tokenValue}>
-          {item.quantity} {item.token_name}
+        {/* <Text className={`${colorScheme === "dark" ? "text-white" : "text-[#02050A]"}`} style={styles.tokenValue}>{item.amount_in_inr} INR</Text> */}
+        <Text
+          className={`${
+            colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+          } font-JakartaBold`}
+          style={styles.tokenValue}
+        >
+          {item.quantity}{" "}
+          <Text
+            className={`${
+              colorScheme === "dark" ? "text-[#e0e0e0]" : "text-[#616161]"
+            } font-JakartaMedium`}
+          >
+            {item.token_name}
+          </Text>
         </Text>
       </View>
     </View>
   );
 
   return (
-    <Animated.View style={{ ...styles.cardContainer, opacity: fadeAnim }}>
+    <Animated.View style={{ ...styles.cardContainer }}>
       <LinearGradient
-        colors={colorScheme === "dark" ? ["#333", "#444"] : ["#fff", "#ddd"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.cardBackground}
+        className="border border-neutral-100 p-[20px] rounded-[20px]"
+        colors={
+          colorScheme === "dark" ? ["#02050A", "#02050A"] : ["#fff", "#fff"]
+        }
       >
         <View style={styles.header}>
-          <Text style={styles.portfolioValue}>
-            ${portfolio.total.toFixed(2)}
+          <Text
+            className={`${
+              colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+            } font-JakartaExtraBold`}
+            style={styles.portfolioValue}
+          >
+            {portfolio.total}
           </Text>
-          <Text style={styles.portfolioLabel}>Total Portfolio Value</Text>
+          <Text
+            className={`${
+              colorScheme === "dark" ? "text-[#e0e0e0]" : "text-[#616161]"
+            } font-JakartaSemiBold`}
+            style={styles.portfolioLabel}
+          >
+            Total Number of Tokens
+          </Text>
         </View>
 
         <FlatList
@@ -69,8 +111,12 @@ const PortfolioCard = ({ portfolio }: any) => {
         />
 
         <TouchableOpacity style={styles.actionButton}>
-          <Text style={styles.actionText}>View Details</Text>
-          <Ionicons name="chevron-forward-outline" size={16} color="#fff" />
+          <Text className="font-JakartaBold" style={styles.actionText}>
+            View Details
+          </Text>
+          <View className="mt-1">
+            <Ionicons name="chevron-forward-outline" size={16} color="#fff" />
+          </View>
         </TouchableOpacity>
       </LinearGradient>
     </Animated.View>
@@ -87,22 +133,15 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 10,
   },
-  cardBackground: {
-    borderRadius: 20,
-    padding: 20,
-  },
   header: {
-    marginBottom: 20,
+    marginBottom: 10,
     alignItems: "center",
   },
   portfolioValue: {
     fontSize: 32,
-    fontWeight: "bold",
-    color: "#fff",
   },
   portfolioLabel: {
     fontSize: 14,
-    color: "#bbb",
   },
   tokenList: {
     marginVertical: 10,
@@ -124,26 +163,23 @@ const styles = StyleSheet.create({
   },
   tokenName: {
     fontSize: 16,
-    color: "#fff",
     fontWeight: "500",
   },
   tokenAmount: {
     fontSize: 14,
-    color: "#bbb",
   },
   tokenValue: {
-    fontSize: 16,
-    color: "#fff",
+    fontSize: 14,
     fontWeight: "600",
   },
   actionButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#905BF5",
+    backgroundColor: "#4646fc",
     padding: 12,
     borderRadius: 10,
-    marginTop: 20,
+    marginTop: 10,
   },
   actionText: {
     fontSize: 16,

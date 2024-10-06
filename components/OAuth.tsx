@@ -85,6 +85,8 @@ const OAuth = ({ title }: { title: string }) => {
       authenticate(idToken, (result, error) => {
         if (result) {
           makeWallet();
+          makeWallet();
+          console.log(result);
           console.log("authentication successful");
           Alert.alert(
             "Success",
