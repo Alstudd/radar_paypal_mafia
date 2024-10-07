@@ -81,9 +81,9 @@ export default function Layout() {
           }}
         />
         <Tabs.Screen
-          name="search"
+          name="flashcards"
           options={{
-            title: "Search",
+            title: "Flashcards",
             headerShown: false,
             tabBarIcon: ({ focused }) => (
               <TabIcon source={icons.list} focused={focused} />

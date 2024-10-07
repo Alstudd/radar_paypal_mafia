@@ -11,7 +11,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 
-interface User {
+interface Candidate {
   name: string;
   title: string;
   achievements: string[];
@@ -23,11 +23,11 @@ interface User {
   socialLinks: { name: string; url: string; icon: any; iconColor: string }[];
 }
 
-interface UserFlashcardProps {
-  user: User;
+interface CandidateFlashcardProps {
+  candidate: Candidate;
 }
 
-const UserFlashcard = ({ user }: UserFlashcardProps) => {
+const CandidateFlashcard = ({ candidate }: CandidateFlashcardProps) => {
   const handleLinkPress = (url: string | undefined) => {
     if (url) {
       Linking.openURL(url);
@@ -46,22 +46,22 @@ const UserFlashcard = ({ user }: UserFlashcardProps) => {
         {/* Profile Image */}
         <View className="items-center">
           <Image
-            source={{ uri: user.profileImage }}
+            source={{ uri: candidate.profileImage }}
             className="w-16 h-16 rounded-full border-4 border-white"
           />
         </View>
         <View>
           <Text className="text-lg font-JakartaBold text-black text-center">
-            {user.name}
+            {candidate.name}
           </Text>
           <Text className="text-sm font-JakartaSemiBold text-white text-center">
-            {user.title}
+            {candidate.title}
           </Text>
         </View>
 
         {/* Social Links */}
         <View className="flex-row space-x-2 mt-2">
-          {user.socialLinks.map((link, index) => (
+          {candidate.socialLinks.map((link, index) => (
             <TouchableOpacity
               key={index}
               onPress={() => handleLinkPress(link.url)}
@@ -74,7 +74,7 @@ const UserFlashcard = ({ user }: UserFlashcardProps) => {
 
       {/* Achievements */}
       <View className="my-2 flex-wrap flex-row">
-        {user.achievements.map((achievement, index) => (
+        {candidate.achievements.map((achievement, index) => (
           <Text
             key={index}
             className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs my-1 mr-2"
@@ -86,14 +86,14 @@ const UserFlashcard = ({ user }: UserFlashcardProps) => {
 
       {/* Job Summary */}
       <Text className="text-base font-JakartaMedium text-gray-800 mb-2">
-        {user.jobSummary}
+        {candidate.jobSummary}
       </Text>
 
       {/* Interests Section with Horizontal Scrolling */}
       <View className="my-1">
         <Text className="text-lg font-JakartaBold text-black">Interests</Text>
         <View className="flex-wrap flex-row mt-2">
-          {user.interests.map((interest, index) => (
+          {candidate.interests.map((interest, index) => (
             <Text
               key={index}
               className="bg-green-200 text-green-800 px-3 py-1 rounded-full text-xs my-1 mr-2"
@@ -108,7 +108,7 @@ const UserFlashcard = ({ user }: UserFlashcardProps) => {
       <View className="my-1">
         <Text className="text-lg font-JakartaBold text-black">Skills</Text>
         <View className="flex-row flex-wrap mt-2">
-          {user.skills.map((skill, index) => (
+          {candidate.skills.map((skill, index) => (
             <Text
               key={index}
               className="bg-purple-200 text-purple-800 px-3 py-1 rounded-full text-xs my-1 mr-2"
@@ -122,7 +122,7 @@ const UserFlashcard = ({ user }: UserFlashcardProps) => {
       {/* Projects Section */}
       <View className="my-1">
         <Text className="text-lg font-JakartaBold text-black">Projects</Text>
-        {user.projects.slice(0, 1).map((project, index) => (
+        {candidate.projects.slice(0, 1).map((project, index) => (
           <View key={index} className="mt-2">
             <View className="flex-row justify-between">
               <Text className="text-base font-JakartaMedium text-gray-800">
@@ -172,4 +172,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default UserFlashcard;
+export default CandidateFlashcard;
