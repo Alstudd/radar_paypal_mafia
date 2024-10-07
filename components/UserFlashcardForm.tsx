@@ -20,7 +20,7 @@ import Icon from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
 import { icons, onboarding } from "@/constants";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAuth } from "@clerk/clerk-expo";
+import { useAuth, useUser } from "@clerk/clerk-expo";
 import {
   AntDesign,
   FontAwesome,
@@ -47,17 +47,17 @@ import ThemeSwitcher from "./ThemeSwitcher";
 import WalletConnection from "./WalletConnection";
 import OktoApiButton from "./OktoApiButton";
 import SolanaWallet from "./SolanaWallet";
+import { fetchAPI } from "@/lib/fetch";
 
 const steps = [
-  { id: 1, title: "Basic Details" },
-  { id: 2, title: "Personal Details" },
-  { id: 3, title: "Projects & Skills" },
-  { id: 4, title: "Interests & Domains" },
-  { id: 5, title: "Social Links" },
-  { id: 6, title: "Achievements" },
-  { id: 7, title: "Documents" },
-  { id: 8, title: "Investment Preferences" },
-  { id: 9, title: "Wallet Connection" },
+  { id: 1, title: "Wallet Connection" },
+  { id: 2, title: "Basic Details" },
+  { id: 3, title: "Personal Details" },
+  { id: 4, title: "Projects & Skills" },
+  { id: 5, title: "Interests & Domains" },
+  { id: 6, title: "Social Links" },
+  { id: 7, title: "Achievements" },
+  { id: 8, title: "Documents" },
 ];
 
 const avatarImages = [
@@ -81,6 +81,12 @@ interface SocialLink {
   username: string;
 }
 
+interface Project {
+  title: string;
+  link: string;
+  description: string;
+}
+
 const webClientId =
   "328551301503-nq398rv0ff8nrubpu8l71avde3c0h78e.apps.googleusercontent.com";
 
@@ -90,9 +96,7 @@ const UserFlashcardForm = () => {
     name: "",
     email: "",
     designation: "",
-    profileData: "",
-    investmentInterests: "",
-    walletAddress: "",
+    profileBio: "",
   });
 
   const [skill, setSkill] = useState("");
@@ -104,7 +108,7 @@ const UserFlashcardForm = () => {
   const [skills, setSkills] = useState<string[]>([]);
   const [interests, setInterests] = useState<string[]>([]);
   const [domains, setDomains] = useState<string[]>([]);
-  const [projects, setProjects] = useState([
+  const [projects, setProjects] = useState<Project[]>([
     { title: "", link: "", description: "" },
   ]);
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
@@ -127,6 +131,8 @@ const UserFlashcardForm = () => {
 
   const { signOut } = useAuth();
   const { logOut } = useOkto() as OktoContextType;
+
+  const clerkUser: any = useUser();
 
   // GoogleSignin.configure({});
   GoogleSignin.configure({
@@ -170,7 +176,25 @@ const UserFlashcardForm = () => {
 
   const nextStep = () => {
     if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1);
+      if (currentStep === 0 && walletAddress === "") {
+        Alert.alert("Error", "Please connect phantom wallet to proceed");
+      } else if (currentStep === 1 && (formValues.name === "" || formValues.email === "" || formValues.designation === "" || formValues.profileBio === "")) {
+        Alert.alert("Error", "Please enter all the fields to proceed");
+      } else if (currentStep === 2 && (selectedGender === null || age === 0 || profilePicture === null)) {
+        Alert.alert("Error", "Please select all the fields to proceed");
+      } else if (currentStep === 3 && (skills.length === 0 || (projects.length === 1 && (projects[0].title === "" || projects[0].link === "" || projects[0].description === "")))) {
+        Alert.alert("Error", "Please enter all the fields to proceed");
+      } else if (currentStep === 4 && (interests.length === 0 || domains.length === 0)) {
+        Alert.alert("Error", "Please enter all the fields to proceed");
+      } else if (currentStep === 5 && socialLinks.length === 0) {
+        Alert.alert("Error", "Please enter all the fields to proceed");
+      } else if (currentStep === 6 && achievements.length === 0) {
+        Alert.alert("Error", "Please enter all the fields to proceed");
+      } else if (currentStep === 7 && resume === null) {
+        Alert.alert("Error", "Please upload your resume to proceed");
+      } else {
+        setCurrentStep(currentStep + 1);
+      }
     }
   };
 
@@ -309,7 +333,46 @@ const UserFlashcardForm = () => {
     });
 
     if (!result.canceled) {
-      setResume(result);
+      setResume(result.assets[0]);
+    }
+  };
+
+  const handleSubmit = async () => {
+    const { data } = await fetchAPI("/(api)/user");
+    const user = data.find(
+      (user: any) =>
+        user.email === GoogleSignin.getCurrentUser()?.user.email ||
+        user.email === clerkUser.user?.primaryEmailAddress?.emailAddress
+    );
+    // post profile api call
+    try {
+      await fetchAPI("/(api)/profile", {
+        method: "POST",
+        body: JSON.stringify({
+          clerk_id: user.clerk_id,
+          google_signin_id: user.google_signin_id,
+          ...formValues,
+          walletAddress,
+          skills,
+          interests,
+          domains,
+          projects,
+          socialLinks,
+          achievements,
+          selectedGender,
+          age,
+          profilePicture: profilePicture?.uri,
+          resume: resume?.uri,
+          date_of_birth: date,
+          isInvestor: false,
+          isRecruiter: false,
+          companyId: null,
+        }),
+      });
+      console.log("User profile created successfully");
+      router.replace("/(root)/(tabs)/home");
+    } catch (error) {
+      console.error("Error submitting profile:", error);
     }
   };
 
@@ -388,6 +451,37 @@ const UserFlashcardForm = () => {
         <View className="mx-4">
           {currentStep === 0 && (
             <View>
+              <SolanaWallet
+                connected={connected}
+                walletAddress={walletAddress}
+                setConnected={setConnected}
+                setWalletAddress={setWalletAddress}
+              />
+              {/* <InputField
+                label="Blockchain Wallet"
+                placeholder="Enter wallet address"
+                value={formValues.walletAddress}
+                onChangeText={(value) => handleChange("walletAddress", value)}
+              /> */}
+              <WalletConnection />
+              {/* <OktoApiButton
+                title="Get Portfolio"
+                apiFn={() => getPortfolio()}
+                setterFn={setPortfolio}
+                className="mt-5"
+                IconLeft={() => (
+                  <Image
+                    source={icons.list}
+                    resizeMode="contain"
+                    className="w-5 h-5 mx-2"
+                  />
+                )}
+              /> */}
+            </View>
+          )}
+
+          {currentStep === 1 && (
+            <View>
               <InputField
                 label="Full Name"
                 placeholder="Enter your full name"
@@ -417,15 +511,15 @@ const UserFlashcardForm = () => {
               <InputArea
                 label="Profile Bio"
                 placeholder="Enter your profile bio"
-                value={formValues.profileData}
-                onChangeText={(value) => handleChange("profileData", value)}
+                value={formValues.profileBio}
+                onChangeText={(value) => handleChange("profileBio", value)}
                 useExpoVectorIcons={true}
                 icon="info-outline"
               />
             </View>
           )}
 
-          {currentStep === 1 && (
+          {currentStep === 2 && (
             <View>
               <Text
                 className={`font-JakartaSemiBold text-lg mt-2 mb-1 ${
@@ -544,7 +638,7 @@ const UserFlashcardForm = () => {
             </View>
           )}
 
-          {currentStep === 2 && (
+          {currentStep === 3 && (
             <View>
               <InputField
                 label="Skills"
@@ -653,7 +747,7 @@ const UserFlashcardForm = () => {
             </View>
           )}
 
-          {currentStep === 3 && (
+          {currentStep === 4 && (
             <View>
               <InputField
                 label="Interests"
@@ -716,7 +810,7 @@ const UserFlashcardForm = () => {
             </View>
           )}
 
-          {currentStep === 4 && (
+          {currentStep === 5 && (
             <View>
               <InputField
                 label="Socials"
@@ -753,7 +847,7 @@ const UserFlashcardForm = () => {
             </View>
           )}
 
-          {currentStep === 5 && (
+          {currentStep === 6 && (
             <View>
               <InputField
                 label="Achievements"
@@ -787,7 +881,7 @@ const UserFlashcardForm = () => {
             </View>
           )}
 
-          {currentStep === 6 && (
+          {currentStep === 7 && (
             <View>
               <Text className="text-lg font-JakartaSemiBold my-3">Resume</Text>
               <View style={styles.previewContainer}>
@@ -802,7 +896,7 @@ const UserFlashcardForm = () => {
                       className="text-center font-JakartaBold"
                       style={styles.pdfName}
                     >
-                      {resume.assets[0].name ? resume.assets[0].name : "PDF"}
+                      {resume.name ? resume.name : "PDF"}
                     </Text>
                   </View>
                 ) : (
@@ -823,50 +917,6 @@ const UserFlashcardForm = () => {
               </TouchableOpacity>
             </View>
           )}
-
-          {currentStep === 7 && (
-            <View>
-              <InputField
-                label="Investment Interests"
-                placeholder="Your investment preferences"
-                value={formValues.investmentInterests}
-                onChangeText={(value) =>
-                  handleChange("investmentInterests", value)
-                }
-              />
-            </View>
-          )}
-
-          {currentStep === 8 && (
-            <View>
-              <SolanaWallet
-                connected={connected}
-                walletAddress={walletAddress}
-                setConnected={setConnected}
-                setWalletAddress={setWalletAddress}
-              />
-              {/* <InputField
-                label="Blockchain Wallet"
-                placeholder="Enter wallet address"
-                value={formValues.walletAddress}
-                onChangeText={(value) => handleChange("walletAddress", value)}
-              /> */}
-              <WalletConnection />
-              {/* <OktoApiButton
-                title="Get Portfolio"
-                apiFn={() => getPortfolio()}
-                setterFn={setPortfolio}
-                className="mt-5"
-                IconLeft={() => (
-                  <Image
-                    source={icons.list}
-                    resizeMode="contain"
-                    className="w-5 h-5 mx-2"
-                  />
-                )}
-              /> */}
-            </View>
-          )}
         </View>
       </ScrollView>
       <View
@@ -876,10 +926,7 @@ const UserFlashcardForm = () => {
         {currentStep < steps.length - 1 ? (
           <CustomButton className="mx-auto" title="Next" onPress={nextStep} />
         ) : (
-          <CustomButton
-            title="Submit"
-            onPress={() => router.replace("/(root)/(tabs)/home")}
-          />
+          <CustomButton title="Submit" onPress={handleSubmit} />
         )}
       </View>
     </SafeAreaView>

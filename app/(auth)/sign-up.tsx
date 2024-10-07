@@ -66,7 +66,8 @@ const SignUp = () => {
             lastname: form.name.split(" ")[1] || null,
             photo: null,
             email: form.email,
-            user_id: completeSignUp.createdUserId,
+            clerk_id: completeSignUp.createdUserId,
+            google_signin_id: `NULL_${form.email}`,
           }),
         });
         await setActive({ session: completeSignUp.createdSessionId });

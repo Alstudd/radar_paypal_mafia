@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { router } from "expo-router";
-import { useAuth } from "@clerk/clerk-expo";
+import { useAuth, useUser } from "@clerk/clerk-expo";
 import { icons } from "@/constants";
 import CustomButton from "@/components/CustomButton";
 import {
@@ -37,6 +37,7 @@ const webClientId =
 const WalletConnection = () => {
   const { colorScheme } = useColorScheme();
   const { signOut } = useAuth();
+  const clerkUser: any = useUser();
   const {
     showWidgetSheet,
     setTheme,
@@ -163,22 +164,56 @@ const WalletConnection = () => {
       );
 
       if (!user) {
-        await fetchAPI("/(api)/user", {
-          method: "POST",
-          body: JSON.stringify({
-            fullname: response.data.user.name,
-            firstname:
-              response.data.user.givenName ||
-              response.data.user.name.split(" ")[0],
-            lastname:
-              response.data.user.familyName ||
-              response.data.user.name.split(" ")[1] ||
-              null,
-            email: response.data.user.email,
-            photo: response.data.user.photo,
-            user_id: response.data.user.id,
-          }),
-        });
+        try {
+          await fetchAPI("/(api)/user", {
+            method: "POST",
+            body: JSON.stringify({
+              fullname: response.data.user.name,
+              firstname:
+                response.data.user.givenName ||
+                response.data.user.name.split(" ")[0],
+              lastname:
+                response.data.user.familyName ||
+                response.data.user.name.split(" ")[1] ||
+                null,
+              email: response.data.user.email,
+              photo: response.data.user.photo,
+              clerk_id: `NULL_${response.data.user.email}`,
+              google_signin_id: response.data.user.id,
+            }),
+          });
+          console.log("User created successfully");
+        } catch (error) {
+          console.error("Error creating user:", error);
+        }
+      } else if (user && user.google_signin_id === `NULL_${user.email}`) {
+        try {
+          const res = await fetchAPI("/(api)/user", {
+            method: "PUT",
+            body: JSON.stringify({
+              fullname: response.data.user.name,
+              firstname:
+                response.data.user.givenName ||
+                response.data.user.name.split(" ")[0],
+              lastname:
+                response.data.user.familyName ||
+                response.data.user.name.split(" ")[1] ||
+                null,
+              email: response.data.user.email,
+              photo: response.data.user.photo,
+              clerk_id: user.clerk_id,
+              google_signin_id: response.data.user.id,
+            }),
+          });
+          console.log(res);
+          console.log("User updated successfully");
+        } catch (error) {
+          console.error("Error creating user:", error);
+          return Response.json(
+            { error: "Internal Server Error" },
+            { status: 500 }
+          );
+        }
       }
 
       const { idToken } = response.data;

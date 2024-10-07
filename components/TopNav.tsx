@@ -44,7 +44,7 @@ const TopNav = () => {
         <ThemeSwitcher />
       </View>
       <View style={styles.container}>
-        {["User", "Candidate", "Ideator"].map((mode) => (
+        {["User", "Recruiter", "Investor"].map((mode) => (
           <TouchableOpacity
             key={mode}
             style={[
