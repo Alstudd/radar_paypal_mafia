@@ -48,7 +48,7 @@ import WalletConnection from "./WalletConnection";
 import OktoApiButton from "./OktoApiButton";
 import SolanaWallet from "./SolanaWallet";
 import { fetchAPI } from "@/lib/fetch";
-import RNS3 from "react-native-aws3";
+import { RNS3 } from "react-native-aws3";
 
 const steps = [
   { id: 1, title: "Wallet Connection" },
@@ -332,7 +332,7 @@ const UserFlashcardForm = () => {
         name: result.assets[0].fileName,
         type: result.assets[0].mimeType,
       }
-      RNS3.RNS3.put(file, awsOptions).then((response: any) => {
+      RNS3.put(file, awsOptions).then((response: any) => {
         if (response.status !== 201) {
           console.error("Failed to upload image to S3", response.body);
         } else {
@@ -358,7 +358,7 @@ const UserFlashcardForm = () => {
         name: result.assets[0].name,
         type: result.assets[0].mimeType,
       }
-      RNS3.RNS3.put(file, awsOptions).then((response: any) => {
+      RNS3.put(file, awsOptions).then((response: any) => {
         if (response.status !== 201) {
           console.error("Failed to upload resume to S3", response.body);
         } else {
