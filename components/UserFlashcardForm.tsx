@@ -48,7 +48,13 @@ import WalletConnection from "./WalletConnection";
 import OktoApiButton from "./OktoApiButton";
 import SolanaWallet from "./SolanaWallet";
 import { fetchAPI } from "@/lib/fetch";
-import { RNS3 } from "react-native-aws3";
+import AWS from "aws-sdk";
+
+AWS.config.update({
+    accessKeyId: `${process.env.AWS_ACCESS_KEY}`,
+    secretAccessKey: `${process.env.AWS_SECRET_KEY}`,
+    region: "us-east-2",
+});
 
 const steps = [
   { id: 1, title: "Wallet Connection" },
@@ -125,6 +131,8 @@ const UserFlashcardForm = () => {
   const [balance, setBalance] = useState<number | null>(null);
 
   const { colorScheme } = useColorScheme();
+
+  const s3 = new AWS.S3();
 
   const progressAnimation = useState(new Animated.Value(0))[0];
 
@@ -310,12 +318,13 @@ const UserFlashcardForm = () => {
     setAchievements(achievements.filter((_, i) => i !== index));
   };
 
-  const awsOptions = {
-    bucket: "antimatrix",
-    region: "us-east-2",
-    accessKey: `${process.env.AWS_ACCESS_KEY}`,
-    secretKey: `${process.env.AWS_SECRET_KEY}`,
-    successActionStatus: 201,
+  const uploadFileToS3 = (bucketName: string, fileName: any, filePath: any) => {
+    const params = {
+      Bucket: bucketName,
+      Key: fileName,
+      Body: filePath,
+    }
+    return s3.upload(params).promise();
   }
 
   const selectImage = async () => {
@@ -327,20 +336,18 @@ const UserFlashcardForm = () => {
     if (!result.canceled && result.assets) {
       console.log(result.assets[0]);
       // setProfilePicture(result.assets[0]);
-      const file: any = {
-        uri: result.assets[0].uri,
-        name: result.assets[0].fileName,
-        type: result.assets[0].mimeType,
+      const bucketName = "antimatrix";
+      const fileName: any = result.assets[0].fileName;
+      const filePath = result.assets[0].uri.replace("file://", "");
+      try {
+        const fileData = await fetch(filePath).then((res) => res.blob());
+        const data = await uploadFileToS3(bucketName, fileName, fileData);
+        console.log(data);
+        console.log("Image uploaded to S3 successfully");
+        setProfilePicture(data.Location);
+      } catch (error) {
+        console.error("Error uploading image to S3:", error);
       }
-      RNS3.put(file, awsOptions).then((response: any) => {
-        if (response.status !== 201) {
-          console.error("Failed to upload image to S3", response.body);
-        } else {
-          console.log(response);
-          console.log("Successfully uploaded image to S3", response.body);
-          setProfilePicture(response.body.postResponse.location);
-        }
-      });
     }
   };
 
@@ -353,20 +360,18 @@ const UserFlashcardForm = () => {
     if (!result.canceled && result.assets) {
       console.log(result.assets[0]);
       // setResume(result.assets[0]);
-      const file: any = {
-        uri: result.assets[0].uri,
-        name: result.assets[0].name,
-        type: result.assets[0].mimeType,
+      const bucketName = "antimatrix";
+      const fileName: any = result.assets[0].name;
+      const filePath = result.assets[0].uri.replace("file://", "");
+      try {
+        const fileData = await fetch(filePath).then((res) => res.blob());
+        const data = await uploadFileToS3(bucketName, fileName, fileData);
+        console.log(data);
+        console.log("Document uploaded to S3 successfully");
+        setResume(data.Location);
+      } catch (error) {
+        console.error("Error uploading document to S3:", error);
       }
-      RNS3.put(file, awsOptions).then((response: any) => {
-        if (response.status !== 201) {
-          console.error("Failed to upload resume to S3", response.body);
-        } else {
-          console.log(response);
-          console.log("Successfully uploaded resume to S3", response.body);
-          setResume(response.body.postResponse.location);
-        }
-      });
     }
   };
 
