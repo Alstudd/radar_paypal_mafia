@@ -124,6 +124,7 @@ const UserFlashcardForm = () => {
 
   const [connected, setConnected] = useState(false);
   const [walletAddress, setWalletAddress] = useState("");
+  const [balance, setBalance] = useState<number | null>(null);
 
   const { colorScheme } = useColorScheme();
 
@@ -456,6 +457,8 @@ const UserFlashcardForm = () => {
                 walletAddress={walletAddress}
                 setConnected={setConnected}
                 setWalletAddress={setWalletAddress}
+                balance={balance}
+                setBalance={setBalance}
               />
               {/* <InputField
                 label="Blockchain Wallet"

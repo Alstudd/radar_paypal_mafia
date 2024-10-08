@@ -277,7 +277,7 @@ const WalletConnection = () => {
     })
       .then((result) => {
         console.log("Transfer success", result);
-        router.push(`/(root)/orderDetails/${result.orderId}`);
+        // router.push(`/(root)/orderDetails/${result.orderId}`);
       })
       .catch((error) => {
         console.log("Transfer error", error);

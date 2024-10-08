@@ -13,6 +13,9 @@ import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import Clipboard from "@react-native-clipboard/clipboard";
 
+const truncateAddress = (address: string) =>
+  `${address.slice(0, 4)}...${address.slice(-4)}`;
+
 export default function Wallets({ wallets, setOpen }: any) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
