@@ -12,7 +12,6 @@ const Page = () => {
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    // Get Profile API request
     const fetchData = async () => {
       try {
         const response = await fetch("/(api)/profile", {

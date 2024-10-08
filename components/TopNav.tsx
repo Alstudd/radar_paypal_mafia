@@ -7,12 +7,15 @@ import Icon from "@expo/vector-icons/Ionicons";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { OktoContextType, useOkto } from "okto-sdk-react-native";
 import { router } from "expo-router";
-import { useAuth } from "@clerk/clerk-expo";
+import { useAuth, useUser } from "@clerk/clerk-expo";
 
 const TopNav = () => {
   const { selectedMode, setSelectedMode } = useSelectedMode();
   const { logOut } = useOkto() as OktoContextType;
   const { signOut } = useAuth();
+  const { user } = useUser();
+  const [isInvestor, setIsInvestor] = React.useState(false);
+  const [isRecruiter, setIsRecruiter] = React.useState(false);
 
   GoogleSignin.configure({});
 
@@ -35,6 +38,27 @@ const TopNav = () => {
     }
   };
 
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("/(api)/profile", {
+          method: "GET",
+        });
+        const { data } = await response.json();
+        const profile = data.find(
+          (profile: any) =>
+            profile.email === user?.primaryEmailAddress?.emailAddress ||
+            profile.email === GoogleSignin.getCurrentUser()?.user.email
+        );
+        setIsInvestor(profile?.isInvestor);
+        setIsRecruiter(profile?.isRecruiter);
+      } catch (error) {
+        console.error("Error fetching profile data:", error);
+      }
+    };
+    fetchData();
+  }, []);
+
   return (
     <View
       style={styles.mainContainer}
@@ -44,7 +68,7 @@ const TopNav = () => {
         <ThemeSwitcher />
       </View>
       <View style={styles.container}>
-        {["User", "Recruiter", "Investor"].map((mode) => (
+        {["User", isRecruiter ? "Recruiter" : "Candidate", isInvestor ? "Investor" : "Ideator"].map((mode) => (
           <TouchableOpacity
             key={mode}
             style={[

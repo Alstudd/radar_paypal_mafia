@@ -48,6 +48,7 @@ import WalletConnection from "./WalletConnection";
 import OktoApiButton from "./OktoApiButton";
 import SolanaWallet from "./SolanaWallet";
 import { fetchAPI } from "@/lib/fetch";
+import RNS3 from "react-native-aws3";
 
 const steps = [
   { id: 1, title: "Wallet Connection" },
@@ -86,9 +87,6 @@ interface Project {
   link: string;
   description: string;
 }
-
-const webClientId =
-  "328551301503-nq398rv0ff8nrubpu8l71avde3c0h78e.apps.googleusercontent.com";
 
 const UserFlashcardForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -135,11 +133,7 @@ const UserFlashcardForm = () => {
 
   const clerkUser: any = useUser();
 
-  // GoogleSignin.configure({});
-  GoogleSignin.configure({
-    scopes: ["email", "profile"],
-    webClientId,
-  });
+  GoogleSignin.configure({});
 
   const handleSignOut = async () => {
     try {
@@ -316,6 +310,14 @@ const UserFlashcardForm = () => {
     setAchievements(achievements.filter((_, i) => i !== index));
   };
 
+  const awsOptions = {
+    bucket: "antimatrix",
+    region: "us-east-2",
+    accessKey: `${process.env.AWS_ACCESS_KEY}`,
+    secretKey: `${process.env.AWS_SECRET_KEY}`,
+    successActionStatus: 201,
+  }
+
   const selectImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -323,7 +325,22 @@ const UserFlashcardForm = () => {
       quality: 1,
     });
     if (!result.canceled && result.assets) {
-      setProfilePicture(result.assets[0]);
+      console.log(result.assets[0]);
+      // setProfilePicture(result.assets[0]);
+      const file: any = {
+        uri: result.assets[0].uri,
+        name: result.assets[0].fileName,
+        type: result.assets[0].mimeType,
+      }
+      RNS3.RNS3.put(file, awsOptions).then((response: any) => {
+        if (response.status !== 201) {
+          console.error("Failed to upload image to S3", response.body);
+        } else {
+          console.log(response);
+          console.log("Successfully uploaded image to S3", response.body);
+          setProfilePicture(response.body.postResponse.location);
+        }
+      });
     }
   };
 
@@ -333,8 +350,23 @@ const UserFlashcardForm = () => {
       copyToCacheDirectory: true,
     });
 
-    if (!result.canceled) {
-      setResume(result.assets[0]);
+    if (!result.canceled && result.assets) {
+      console.log(result.assets[0]);
+      // setResume(result.assets[0]);
+      const file: any = {
+        uri: result.assets[0].uri,
+        name: result.assets[0].name,
+        type: result.assets[0].mimeType,
+      }
+      RNS3.RNS3.put(file, awsOptions).then((response: any) => {
+        if (response.status !== 201) {
+          console.error("Failed to upload resume to S3", response.body);
+        } else {
+          console.log(response);
+          console.log("Successfully uploaded resume to S3", response.body);
+          setResume(response.body.postResponse.location);
+        }
+      });
     }
   };
 
@@ -362,10 +394,10 @@ const UserFlashcardForm = () => {
           achievements,
           selectedGender,
           age,
-          profilePicture: profilePicture?.uri,
-          resume: resume?.uri,
+          profilePicture: profilePicture,
+          resume: resume,
           date_of_birth: date,
-          isInvestor: false,
+          isInvestor: balance ? balance >= 1 : false,
           isRecruiter: false,
           companyId: null,
         }),
@@ -615,7 +647,7 @@ const UserFlashcardForm = () => {
               <View style={styles.imageContainer}>
                 {profilePicture ? (
                   <Image
-                    source={{ uri: profilePicture.uri }}
+                    source={{ uri: profilePicture }}
                     style={styles.profileImage}
                   />
                 ) : (
