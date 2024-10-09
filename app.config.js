@@ -1,7 +1,7 @@
 export default {
     "expo": {
       "name": "AntiMatrix",
-      "slug": "AntiMatrix",
+      "slug": "radar_paypal_mafia",
       "version": "1.0.0",
       "orientation": "portrait",
       "icon": "./assets/images/AntiMatrix.png",
