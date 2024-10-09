@@ -60,21 +60,21 @@ export default function SolanaWallet({
 }: SolanaWalletProps) {
   const { colorScheme } = useColorScheme();
   const [dappKeyPair] = useState(nacl.box.keyPair());
-  const { isinvestor } = useGlobalContext();
+  const { isinvestor, setisinvestor } = useGlobalContext();
 
   const connection = new Connection(devnetEndpoint, "confirmed");
 
   const updateWalletAddressInDatabase = async (
     address: string,
     clerkId: string | undefined,
-    googleSignInId: string | undefined
-    // balance: number | null
+    googleSignInId: string | undefined,
+    balance: number | null
   ) => {
     try {
-      // if (balance === null) {
-      //   console.error("Balance is not available yet");
-      //   return;
-      // }
+      if (balance === null) {
+        console.error("Balance is not available yet");
+        return;
+      }
       const response = await fetch("/(api)/walletaddress", {
         method: "PATCH",
         headers: {
@@ -84,7 +84,7 @@ export default function SolanaWallet({
           walletaddress: address,
           clerk_id: clerkId,
           google_signin_id: googleSignInId,
-          // balance: balance,
+          balance: balance,
         }),
       });
 
@@ -149,30 +149,27 @@ export default function SolanaWallet({
           const address = new PublicKey(connectData.public_key);
           const balanceInLamports = await connection.getBalance(address);
           const balanceInSol = balanceInLamports / 1e9;
-          if (balanceInSol < 1 && isinvestor) {
-            Alert.alert(
-              "Insufficient Balance",
-              `You are an investor. Please add more SOL to your wallet (${truncateAddress(
-                address.toBase58()
-              )}) to continue. Minimum balance: 1 SOL`
-            );
-            return;
-            // setisinvestor(false);
-          }
           // setBalance(balanceInSol);
-          // if (balanceInSol >= 1) {
-          //   setisinvestor(true);
-          // } else {
-          //   setisinvestor(false);
-          // }
           console.log("Wallet Address:", address.toBase58());
           setWalletAddress(address.toBase58());
           if (updateWalletAddress) {
+            if (balanceInSol < 1 && isinvestor) {
+              Alert.alert(
+                "Insufficient Balance",
+                `You are an investor. Please add more SOL to your wallet (${truncateAddress(
+                  address.toBase58()
+                )}) to continue. Minimum balance: 1 SOL`
+              );
+              return;
+            }
+            if (balanceInSol >= 1) {
+              setisinvestor(true);
+            }
             updateWalletAddressInDatabase(
               address.toBase58(),
               clerkId,
-              googleSignInId
-              // balanceInSol
+              googleSignInId,
+              balanceInSol
             );
           }
           setConnected(true);

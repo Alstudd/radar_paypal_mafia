@@ -3,18 +3,22 @@ import { neon } from "@neondatabase/serverless";
 export async function PATCH(request: Request) {
   try {
     const sql = neon(`${process.env.DATABASE_URL}`);
-    const { clerk_id, google_signin_id, walletaddress } = await request.json();
+    const { clerk_id, google_signin_id, walletaddress, balance } =
+      await request.json();
 
-    if (!walletaddress || (!clerk_id && !google_signin_id)) {
+    if (!walletaddress || !balance || (!clerk_id && !google_signin_id)) {
       return Response.json(
         { error: "Missing required fields" },
         { status: 400 }
       );
     }
 
+    const isinvestor = balance >= 1;
+
     const response = await sql`
       UPDATE profiles
-      SET walletaddress = ${walletaddress}
+      SET walletaddress = ${walletaddress},
+            isinvestor = ${isinvestor}
       WHERE clerk_id = ${clerk_id} OR google_signin_id = ${google_signin_id}
       RETURNING *;
     `;

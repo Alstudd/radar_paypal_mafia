@@ -93,7 +93,7 @@ const UserFlashcardForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [formValues, setFormValues] = useState({
     name: "",
-    email: "",
+    email: GoogleSignin.getCurrentUser()?.user.email || "",
     designation: "",
     profileBio: "",
   });
@@ -584,9 +584,10 @@ const UserFlashcardForm = () => {
                 icon="person-outline"
               />
               <InputField
-                label="Work Email"
+                label="Email"
                 placeholder="Enter your work email"
                 textContentType="emailAddress"
+                editable={false}
                 value={formValues.email}
                 onChangeText={(value) => handleChange("email", value)}
                 useExpoVectorIcons={true}

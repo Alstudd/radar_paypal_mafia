@@ -277,6 +277,7 @@ const WalletConnection = () => {
     })
       .then((result) => {
         console.log("Transfer success", result);
+        Alert.alert("Transfer success", "Tokens transferred successfully");
         // router.push(`/(root)/orderDetails/${result.orderId}`);
       })
       .catch((error) => {

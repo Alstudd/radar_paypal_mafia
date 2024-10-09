@@ -18,7 +18,7 @@ import {
 } from "react-native";
 import InputField from "@/components/InputField";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useOkto, type OktoContextType } from "okto-sdk-react-native";
+import { useOkto, User, type OktoContextType } from "okto-sdk-react-native";
 import React, { useState, useEffect } from "react";
 import { fetchAPI } from "@/lib/fetch";
 import { icons } from "@/constants";
@@ -32,7 +32,7 @@ import ThemeSwitcher from "@/components/ThemeSwitcher";
 import { StatusBar } from "expo-status-bar";
 import SolanaWallet from "@/components/SolanaWallet";
 
-interface User {
+interface UserData {
   name: string;
   email: string;
   designation: string;
@@ -353,11 +353,26 @@ const jobs: Job[] = [
 ];
 
 const Flashcards = () => {
+  const { user: clerkUser, isSignedIn: isClerkSignedIn } = useUser();
   const { selectedMode } = useSelectedMode();
   const { colorScheme } = useColorScheme();
+  const [userDetails, setUserDetails] = useState<User | null>(null);
   const [users, setUsers] = useState<any>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const { getUserDetails } = useOkto() as OktoContextType;
+
+  useEffect(() => {
+    if (!isClerkSignedIn) {
+      getUserDetails()
+        .then((result: User) => {
+          setUserDetails(result);
+        })
+        .catch((error) => {
+          console.error("Error fetching Okto user details:", error);
+        });
+    }
+  }, [isClerkSignedIn]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -367,7 +382,16 @@ const Flashcards = () => {
           method: "GET",
         });
         const { data } = await response.json();
-        setUsers(data);
+        let user;
+        if (isClerkSignedIn) {
+          user = data.filter(
+            (user: any) =>
+              user.email !== clerkUser?.primaryEmailAddress?.emailAddress
+          );
+        } else if (userDetails) {
+          user = data.filter((user: any) => user.email !== userDetails?.email);
+        }
+        setUsers(user);
         setLoading(false);
         setFetchError(null);
       } catch (error) {
@@ -376,8 +400,10 @@ const Flashcards = () => {
         setLoading(false);
       }
     };
-    fetchData();
-  }, []);
+    if (isClerkSignedIn || userDetails) {
+      fetchData();
+    }
+  }, [isClerkSignedIn, clerkUser, userDetails]);
 
   const onSwipeLeft = (user: any) => {
     console.warn("swipe left", user.name);
@@ -397,66 +423,76 @@ const Flashcards = () => {
         backgroundColor={colorScheme == "dark" ? "black" : "white"}
         style={colorScheme == "dark" ? "light" : "dark"}
       />
-      {selectedMode === "User" && (
-        <View style={styles.pageContainer}>
-          <FlashcardWrapper
-            data={users}
-            renderItem={({ item }: { item: User }) => (
-              <UserFlashcard user={item} />
-            )}
-            onSwipeLeft={onSwipeLeft}
-            onSwipeRight={onSwipeRight}
-          />
+      {loading ? (
+        <View className="flex items-center justify-center h-full">
+          <ActivityIndicator size="large" color="#4646fc" />
         </View>
-      )}
-      {selectedMode === "Recruiter" && (
-        <View style={styles.pageContainer}>
-          <FlashcardWrapper
-            data={users}
-            renderItem={({ item }: { item: User }) => (
-              <CandidateFlashcard candidate={item} />
-            )}
-            onSwipeLeft={onSwipeLeft}
-            onSwipeRight={onSwipeRight}
-          />
-        </View>
-        // <RecruiterFlashcardWrapper />
-      )}
-      {selectedMode === "Candidate" && (
-        <View style={styles.pageContainer}>
-          <FlashcardWrapper
-            data={jobs}
-            renderItem={({ item }: { item: Job }) => (
-              <JobFlashcard job={item} />
-            )}
-            onSwipeLeft={onSwipeLeft}
-            onSwipeRight={onSwipeRight}
-          />
-        </View>
-      )}
-      {selectedMode === "Investor" && (
-        <View style={styles.pageContainer}>
-          <FlashcardWrapper
-            data={ideators}
-            renderItem={({ item }: { item: Ideator }) => (
-              <IdeatorFlashcard ideator={item} />
-            )}
-            onSwipeLeft={onSwipeLeft}
-            onSwipeRight={onSwipeRight}
-          />
-        </View>
-      )}
-      {selectedMode === "Ideator" && (
-        <View style={styles.pageContainer}>
-          <FlashcardWrapper
-            data={investors}
-            renderItem={({ item }: { item: Investor }) => (
-              <InvestorFlashcard investor={item} />
-            )}
-            onSwipeLeft={onSwipeLeft}
-            onSwipeRight={onSwipeRight}
-          />
-        </View>
+      ) : fetchError ? (
+        <Text className="text-red-500 text-center">{fetchError}</Text>
+      ) : (
+        <>
+          {selectedMode === "User" && (
+            <View style={styles.pageContainer}>
+              <FlashcardWrapper
+                data={users}
+                renderItem={({ item }: { item: UserData }) => (
+                  <UserFlashcard user={item} />
+                )}
+                onSwipeLeft={onSwipeLeft}
+                onSwipeRight={onSwipeRight}
+              />
+            </View>
+          )}
+          {selectedMode === "Recruiter" && (
+            <View style={styles.pageContainer}>
+              <FlashcardWrapper
+                data={users}
+                renderItem={({ item }: { item: UserData }) => (
+                  <CandidateFlashcard candidate={item} />
+                )}
+                onSwipeLeft={onSwipeLeft}
+                onSwipeRight={onSwipeRight}
+              />
+            </View>
+            // <RecruiterFlashcardWrapper />
+          )}
+          {selectedMode === "Candidate" && (
+            <View style={styles.pageContainer}>
+              <FlashcardWrapper
+                data={jobs}
+                renderItem={({ item }: { item: Job }) => (
+                  <JobFlashcard job={item} />
+                )}
+                onSwipeLeft={onSwipeLeft}
+                onSwipeRight={onSwipeRight}
+              />
+            </View>
+          )}
+          {selectedMode === "Investor" && (
+            <View style={styles.pageContainer}>
+              <FlashcardWrapper
+                data={ideators}
+                renderItem={({ item }: { item: Ideator }) => (
+                  <IdeatorFlashcard ideator={item} />
+                )}
+                onSwipeLeft={onSwipeLeft}
+                onSwipeRight={onSwipeRight}
+              />
+            </View>
+          )}
+          {selectedMode === "Ideator" && (
+            <View style={styles.pageContainer}>
+              <FlashcardWrapper
+                data={investors}
+                renderItem={({ item }: { item: Investor }) => (
+                  <InvestorFlashcard investor={item} />
+                )}
+                onSwipeLeft={onSwipeLeft}
+                onSwipeRight={onSwipeRight}
+              />
+            </View>
+          )}
+        </>
       )}
     </View>
   );
