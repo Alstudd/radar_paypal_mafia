@@ -48,13 +48,8 @@ import WalletConnection from "./WalletConnection";
 import OktoApiButton from "./OktoApiButton";
 import SolanaWallet from "./SolanaWallet";
 import { fetchAPI } from "@/lib/fetch";
-import AWS from "aws-sdk";
-
-AWS.config.update({
-    accessKeyId: `${process.env.AWS_ACCESS_KEY}`,
-    secretAccessKey: `${process.env.AWS_SECRET_KEY}`,
-    region: "us-east-2",
-});
+import axios from "axios";
+import * as FileSystem from 'expo-file-system';
 
 const steps = [
   { id: 1, title: "Wallet Connection" },
@@ -122,6 +117,7 @@ const UserFlashcardForm = () => {
   const [age, setAge] = useState(0);
   const [profilePicture, setProfilePicture] = useState<any>(null);
   const [resume, setResume] = useState<any>(null);
+  const [uploading, setUploading] = useState(false);
 
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
@@ -131,8 +127,6 @@ const UserFlashcardForm = () => {
   const [balance, setBalance] = useState<number | null>(null);
 
   const { colorScheme } = useColorScheme();
-
-  const s3 = new AWS.S3();
 
   const progressAnimation = useState(new Animated.Value(0))[0];
 
@@ -181,13 +175,32 @@ const UserFlashcardForm = () => {
     if (currentStep < steps.length - 1) {
       if (currentStep === 0 && walletAddress === "") {
         Alert.alert("Error", "Please connect phantom wallet to proceed");
-      } else if (currentStep === 1 && (formValues.name === "" || formValues.email === "" || formValues.designation === "" || formValues.profileBio === "")) {
+      } else if (
+        currentStep === 1 &&
+        (formValues.name === "" ||
+          formValues.email === "" ||
+          formValues.designation === "" ||
+          formValues.profileBio === "")
+      ) {
         Alert.alert("Error", "Please enter all the fields to proceed");
-      } else if (currentStep === 2 && (selectedGender === null || age === 0 || profilePicture === null)) {
+      } else if (
+        currentStep === 2 &&
+        (selectedGender === null || age === 0 || profilePicture === null)
+      ) {
         Alert.alert("Error", "Please select all the fields to proceed");
-      } else if (currentStep === 3 && (skills.length === 0 || (projects.length === 1 && (projects[0].title === "" || projects[0].link === "" || projects[0].description === "")))) {
+      } else if (
+        currentStep === 3 &&
+        (skills.length === 0 ||
+          (projects.length === 1 &&
+            (projects[0].title === "" ||
+              projects[0].link === "" ||
+              projects[0].description === "")))
+      ) {
         Alert.alert("Error", "Please enter all the fields to proceed");
-      } else if (currentStep === 4 && (interests.length === 0 || domains.length === 0)) {
+      } else if (
+        currentStep === 4 &&
+        (interests.length === 0 || domains.length === 0)
+      ) {
         Alert.alert("Error", "Please enter all the fields to proceed");
       } else if (currentStep === 5 && socialLinks.length === 0) {
         Alert.alert("Error", "Please enter all the fields to proceed");
@@ -318,14 +331,59 @@ const UserFlashcardForm = () => {
     setAchievements(achievements.filter((_, i) => i !== index));
   };
 
-  const uploadFileToS3 = (bucketName: string, fileName: any, filePath: any) => {
-    const params = {
-      Bucket: bucketName,
-      Key: fileName,
-      Body: filePath,
+  const uploadImageToCloudinary = async (file: any) => {
+    setUploading(true);
+
+    const data = new FormData();
+    data.append("file", file);
+    data.append("upload_preset", "antimatrix");
+    data.append("cloud_name", "daoaucxkl");
+
+    try {
+      const response = await axios.post(
+        "https://api.cloudinary.com/v1_1/daoaucxkl/image/upload",
+        data,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log("Upload Success", response.data);
+      return response.data.secure_url;
+    } catch (error) {
+      console.log("Upload Error", error);
+    } finally {
+      setUploading(false);
     }
-    return s3.upload(params).promise();
-  }
+  };
+
+  const uploadPDFToCloudinary = async (file: any) => {
+    setUploading(true);
+
+    const data = new FormData();
+    data.append("file", file);
+    data.append("upload_preset", "antimatrix");
+    data.append("cloud_name", "daoaucxkl");
+
+    try {
+      const response = await axios.post(
+        "https://api.cloudinary.com/v1_1/daoaucxkl/raw/upload",
+        data,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log("Upload Success", response.data);
+      return response.data.secure_url;
+    } catch (error) {
+      console.log("Upload Error", error);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const selectImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -334,56 +392,50 @@ const UserFlashcardForm = () => {
       quality: 1,
     });
     if (!result.canceled && result.assets) {
-      console.log(result.assets[0]);
-      // setProfilePicture(result.assets[0]);
-      const bucketName = "antimatrix";
-      const fileName: any = result.assets[0].fileName;
-      const filePath = result.assets[0].uri.replace("file://", "");
-      try {
-        const fileData = await fetch(filePath).then((res) => res.blob());
-        const data = await uploadFileToS3(bucketName, fileName, fileData);
-        console.log(data);
-        console.log("Image uploaded to S3 successfully");
-        setProfilePicture(data.Location);
-      } catch (error) {
-        console.error("Error uploading image to S3:", error);
-      }
+      setProfilePicture(result.assets[0]);
     }
   };
 
   const selectDocument = async () => {
     const result = await DocumentPicker.getDocumentAsync({
       type: "application/pdf",
-      copyToCacheDirectory: true,
     });
-
     if (!result.canceled && result.assets) {
-      console.log(result.assets[0]);
-      // setResume(result.assets[0]);
-      const bucketName = "antimatrix";
-      const fileName: any = result.assets[0].name;
-      const filePath = result.assets[0].uri.replace("file://", "");
-      try {
-        const fileData = await fetch(filePath).then((res) => res.blob());
-        const data = await uploadFileToS3(bucketName, fileName, fileData);
-        console.log(data);
-        console.log("Document uploaded to S3 successfully");
-        setResume(data.Location);
-      } catch (error) {
-        console.error("Error uploading document to S3:", error);
-      }
+      setResume(result.assets[0]);
     }
   };
 
   const handleSubmit = async () => {
-    const { data } = await fetchAPI("/(api)/user");
-    const user = data.find(
-      (user: any) =>
-        user.email === GoogleSignin.getCurrentUser()?.user.email ||
-        user.email === clerkUser.user?.primaryEmailAddress?.emailAddress
-    );
-    // post profile api call
     try {
+      const { data } = await fetchAPI("/(api)/user");
+      const user = data.find(
+        (user: any) =>
+          user.email === GoogleSignin.getCurrentUser()?.user.email ||
+          user.email === clerkUser.user?.primaryEmailAddress?.emailAddress
+      );
+
+      const profileImage = {
+        uri: profilePicture.uri,
+        name: profilePicture.fileName || "upload.jpg",
+        type: profilePicture.mimeType || "image/jpeg",
+      };
+      const profilePictureUrl = await uploadImageToCloudinary(profileImage);
+      console.log("Profile Picture URL:", profilePictureUrl);
+
+      const base64File = await FileSystem.readAsStringAsync(resume.uri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      // const resumeFile = {
+      //   uri: resume.uri,
+      //   name: resume.name || "upload.pdf",
+      //   type: resume.mimeType || "application/pdf",
+      // };
+      const resumeFile = `data:${resume.mimeType};base64,${base64File}`;
+      const resumeUrl = await uploadPDFToCloudinary(resumeFile);
+      console.log("Resume URL:", resumeUrl);
+      // while download resume in flashcard, use this url but add .pdf at the end of the download file name not the url (url keep same)
+
       await fetchAPI("/(api)/profile", {
         method: "POST",
         body: JSON.stringify({
@@ -399,8 +451,8 @@ const UserFlashcardForm = () => {
           achievements,
           selectedGender,
           age,
-          profilePicture: profilePicture,
-          resume: resume,
+          profilePicture: profilePictureUrl,
+          resume: resumeUrl,
           date_of_birth: date,
           isInvestor: balance ? balance >= 1 : false,
           isRecruiter: false,
@@ -652,7 +704,7 @@ const UserFlashcardForm = () => {
               <View style={styles.imageContainer}>
                 {profilePicture ? (
                   <Image
-                    source={{ uri: profilePicture }}
+                    source={{ uri: profilePicture.uri }}
                     style={styles.profileImage}
                   />
                 ) : (

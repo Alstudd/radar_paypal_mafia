@@ -1,5 +1,5 @@
 // TopNav.tsx
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useSelectedMode } from "@/contexts/SelectedModeContext";
 import ThemeSwitcher from "./ThemeSwitcher";
@@ -50,8 +50,8 @@ const TopNav = () => {
             profile.email === user?.primaryEmailAddress?.emailAddress ||
             profile.email === GoogleSignin.getCurrentUser()?.user.email
         );
-        setIsInvestor(profile?.isInvestor);
-        setIsRecruiter(profile?.isRecruiter);
+        setIsInvestor(profile?.isinvestor);
+        setIsRecruiter(profile?.isrecruiter);
       } catch (error) {
         console.error("Error fetching profile data:", error);
       }
@@ -62,7 +62,7 @@ const TopNav = () => {
   return (
     <View
       style={styles.mainContainer}
-      className="flex flex-row justify-between items-center w-full px-3"
+      className="flex flex-row justify-between items-center w-full px-2"
     >
       <View className="flex items-center justify-center">
         <ThemeSwitcher />

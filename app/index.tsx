@@ -18,13 +18,13 @@ const Page = () => {
           method: "GET",
         });
         const { data } = await response.json();
-        const profile = data.find(
+        const profile = data?.find(
           (profile: any) =>
             profile.email === user?.primaryEmailAddress?.emailAddress ||
             profile.email === GoogleSignin.getCurrentUser()?.user.email
         );
-        console.log("Profile data:", profile);
         if (profile) {
+          console.log("Profile data:", profile);
           setIsProfileComplete(true);
         }
       } catch (error) {
