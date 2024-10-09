@@ -6,6 +6,7 @@ import {
   Linking,
   Text,
   StyleSheet,
+  Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import base58 from "bs58";
@@ -18,6 +19,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import Icon from "@expo/vector-icons/Ionicons";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import Clipboard from "@react-native-clipboard/clipboard";
+import axios from "axios";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
 interface SolanaWalletProps {
   connected: boolean;
@@ -26,6 +29,10 @@ interface SolanaWalletProps {
   setWalletAddress: (walletAddress: string) => void;
   balance: number | null;
   setBalance: (balance: number | null) => void;
+  redirectUrl?: string;
+  updateWalletAddress?: boolean;
+  clerkId?: string;
+  googleSignInId?: string;
 }
 
 const useUniversalLinks = false;
@@ -46,11 +53,47 @@ export default function SolanaWallet({
   setWalletAddress,
   balance,
   setBalance,
+  redirectUrl,
+  updateWalletAddress,
+  clerkId,
+  googleSignInId,
 }: SolanaWalletProps) {
   const { colorScheme } = useColorScheme();
   const [dappKeyPair] = useState(nacl.box.keyPair());
+  const { isinvestor } = useGlobalContext();
 
   const connection = new Connection(devnetEndpoint, "confirmed");
+
+  const updateWalletAddressInDatabase = async (
+    address: string,
+    clerkId: string | undefined,
+    googleSignInId: string | undefined
+    // balance: number | null
+  ) => {
+    try {
+      // if (balance === null) {
+      //   console.error("Balance is not available yet");
+      //   return;
+      // }
+      const response = await fetch("/(api)/walletaddress", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          walletaddress: address,
+          clerk_id: clerkId,
+          google_signin_id: googleSignInId,
+          // balance: balance,
+        }),
+      });
+
+      const data = await response.json();
+      console.log("Wallet address updated successfully", data);
+    } catch (error) {
+      console.error("Failed to update wallet address", error);
+    }
+  };
 
   const decryptPayload = (
     data: string,
@@ -104,14 +147,35 @@ export default function SolanaWallet({
 
         if (connectData && connectData.public_key) {
           const address = new PublicKey(connectData.public_key);
+          const balanceInLamports = await connection.getBalance(address);
+          const balanceInSol = balanceInLamports / 1e9;
+          if (balanceInSol < 1 && isinvestor) {
+            Alert.alert(
+              "Insufficient Balance",
+              `You are an investor. Please add more SOL to your wallet (${truncateAddress(
+                address.toBase58()
+              )}) to continue. Minimum balance: 1 SOL`
+            );
+            return;
+            // setisinvestor(false);
+          }
+          // setBalance(balanceInSol);
+          // if (balanceInSol >= 1) {
+          //   setisinvestor(true);
+          // } else {
+          //   setisinvestor(false);
+          // }
           console.log("Wallet Address:", address.toBase58());
           setWalletAddress(address.toBase58());
+          if (updateWalletAddress) {
+            updateWalletAddressInDatabase(
+              address.toBase58(),
+              clerkId,
+              googleSignInId
+              // balanceInSol
+            );
+          }
           setConnected(true);
-
-          // Fetch balance on devnet
-          const balanceInLamports = await connection.getBalance(address);
-          const balanceInSol = balanceInLamports / 1e9; // Convert lamports to SOL
-          setBalance(balanceInSol);
         } else {
           console.error("Decryption failed or public key is missing");
         }
@@ -127,6 +191,15 @@ export default function SolanaWallet({
     };
   }, [dappKeyPair]);
 
+  useEffect(() => {
+    if (walletAddress) {
+      const address = new PublicKey(walletAddress);
+      connection.getBalance(address).then((balance) => {
+        setBalance(balance / 10 ** 9);
+      });
+    }
+  }, [walletAddress]);
+
   return (
     <View>
       <CustomButton
@@ -139,7 +212,9 @@ export default function SolanaWallet({
             dapp_encryption_public_key: base58.encode(dappKeyPair.publicKey),
             cluster: "devnet", // Changed to devnet
             app_url: "https://phantom.app",
-            redirect_link: "antimatrix://(root)/userFlashcardForm", // Change to antiMatrix
+            redirect_link: redirectUrl
+              ? `antimatrix://${redirectUrl}`
+              : "antimatrix://(root)/userFlashcardForm", // Change to antiMatrix
           });
           Linking.openURL(buildUrl("connect", params));
         }}

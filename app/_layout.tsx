@@ -9,6 +9,7 @@ import { LogBox } from "react-native";
 import { tokenCache } from "@/lib/auth";
 import { SelectedModeProvider } from "@/contexts/SelectedModeContext";
 import { OktoProvider, BuildType } from "okto-sdk-react-native";
+import { GlobalProvider } from "@/contexts/GlobalContext";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -51,14 +52,16 @@ export default function RootLayout() {
     >
       <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
         <ClerkLoaded>
-          <SelectedModeProvider>
-            <Stack>
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-              <Stack.Screen name="(root)" options={{ headerShown: false }} />
-              <Stack.Screen name="+not-found" />
-            </Stack>
-          </SelectedModeProvider>
+          <GlobalProvider>
+            <SelectedModeProvider>
+              <Stack>
+                <Stack.Screen name="index" options={{ headerShown: false }} />
+                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                <Stack.Screen name="(root)" options={{ headerShown: false }} />
+                <Stack.Screen name="+not-found" />
+              </Stack>
+            </SelectedModeProvider>
+          </GlobalProvider>
         </ClerkLoaded>
       </ClerkProvider>
     </OktoProvider>

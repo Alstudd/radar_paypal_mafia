@@ -8,14 +8,14 @@ import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { OktoContextType, useOkto } from "okto-sdk-react-native";
 import { router } from "expo-router";
 import { useAuth, useUser } from "@clerk/clerk-expo";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
 const TopNav = () => {
   const { selectedMode, setSelectedMode } = useSelectedMode();
+  const { isinvestor, setisinvestor, isrecruiter, setisrecruiter } = useGlobalContext();
   const { logOut } = useOkto() as OktoContextType;
   const { signOut } = useAuth();
   const { user } = useUser();
-  const [isInvestor, setIsInvestor] = React.useState(false);
-  const [isRecruiter, setIsRecruiter] = React.useState(false);
 
   GoogleSignin.configure({});
 
@@ -50,8 +50,8 @@ const TopNav = () => {
             profile.email === user?.primaryEmailAddress?.emailAddress ||
             profile.email === GoogleSignin.getCurrentUser()?.user.email
         );
-        setIsInvestor(profile?.isinvestor);
-        setIsRecruiter(profile?.isrecruiter);
+        setisinvestor(profile?.isinvestor);
+        setisrecruiter(profile?.isrecruiter);
       } catch (error) {
         console.error("Error fetching profile data:", error);
       }
@@ -68,7 +68,7 @@ const TopNav = () => {
         <ThemeSwitcher />
       </View>
       <View style={styles.container}>
-        {["User", isRecruiter ? "Recruiter" : "Candidate", isInvestor ? "Investor" : "Ideator"].map((mode) => (
+        {["User", isrecruiter ? "Recruiter" : "Candidate", isinvestor ? "Investor" : "Ideator"].map((mode) => (
           <TouchableOpacity
             key={mode}
             style={[

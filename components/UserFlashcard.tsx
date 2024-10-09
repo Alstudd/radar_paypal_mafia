@@ -4,23 +4,33 @@ import {
   Text,
   TouchableOpacity,
   Image,
-  ScrollView,
   Linking,
   StyleSheet,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { MaterialIcons, Ionicons } from "@expo/vector-icons";
+import { MaterialIcons, Ionicons, FontAwesome6 } from "@expo/vector-icons";
+import { useColorScheme } from "nativewind";
 
 interface User {
   name: string;
-  title: string;
-  achievements: string[];
-  jobSummary: string;
-  interests: string[];
+  email: string;
+  designation: string;
+  profilebio: string;
+  walletaddress: string;
   skills: string[];
-  projects: { title: string; description: string; link?: string }[];
-  profileImage: string;
-  socialLinks: { name: string; url: string; icon: any; iconColor: string }[];
+  interests: string[];
+  domains: string[];
+  projects: { title: string; description: string; link: string }[];
+  sociallinks: { icon: string; link: string; username: string }[];
+  achievements: string[];
+  selectedgender: string;
+  age: number;
+  profilepicture: string;
+  resume: string;
+  date_of_birth: string;
+  isinvestor: boolean;
+  isrecruiter: boolean;
+  companyId: string;
 }
 
 interface UserFlashcardProps {
@@ -28,6 +38,7 @@ interface UserFlashcardProps {
 }
 
 const UserFlashcard = ({ user }: UserFlashcardProps) => {
+  const { colorScheme } = useColorScheme();
   const handleLinkPress = (url: string | undefined) => {
     if (url) {
       Linking.openURL(url);
@@ -35,120 +46,182 @@ const UserFlashcard = ({ user }: UserFlashcardProps) => {
   };
 
   return (
-    <View style={styles.card} className="p-4 relative">
+    <View
+      style={styles.card}
+      className={`relative border-[2px] ${
+        colorScheme === "dark"
+          ? "bg-[#02050A] border-[#4646fc]"
+          : "bg-white border-white"
+      }`}
+    >
       {/* Profile Image with Gradient Background */}
-      <LinearGradient
-        colors={["#42a5f5", "#1e88e5", "#3f51b5"]}
-        className="absolute top-0 left-0 right-0 h-24 rounded-t-lg"
-      />
-
-      <View className="flex-row justify-between mb-4">
-        {/* Profile Image */}
-        <View className="items-center">
-          <Image
-            source={{ uri: user.profileImage }}
-            className="w-16 h-16 rounded-full border-4 border-white"
-          />
-        </View>
-        <View>
-          <Text className="text-lg font-JakartaBold text-black text-center">
-            {user.name}
-          </Text>
-          <Text className="text-sm font-JakartaSemiBold text-white text-center">
-            {user.title}
-          </Text>
-        </View>
-
-        {/* Social Links */}
-        <View className="flex-row space-x-2 mt-2">
-          {user.socialLinks.map((link, index) => (
-            <TouchableOpacity
-              key={index}
-              onPress={() => handleLinkPress(link.url)}
-            >
-              <Ionicons name={link.icon} size={20} color={link.iconColor} />
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
-
-      {/* Achievements */}
-      <View className="my-2 flex-wrap flex-row">
-        {user.achievements.map((achievement, index) => (
-          <Text
-            key={index}
-            className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs my-1 mr-2"
-          >
-            {achievement}
-          </Text>
-        ))}
-      </View>
-
-      {/* Job Summary */}
-      <Text className="text-base font-JakartaMedium text-gray-800 mb-2">
-        {user.jobSummary}
-      </Text>
-
-      {/* Interests Section with Horizontal Scrolling */}
-      <View className="my-1">
-        <Text className="text-lg font-JakartaBold text-black">Interests</Text>
-        <View className="flex-wrap flex-row mt-2">
-          {user.interests.map((interest, index) => (
+      <View className="px-4 pt-4 border-b-[1.5px] border-b-white">
+        <LinearGradient
+          colors={
+            colorScheme === "dark"
+              ? ["#4646fc", "#1e88e5", "#4646fc"]
+              : ["#4646fc", "#1e88e5", "#EEEEEE"]
+          }
+          className="absolute top-0 left-0 right-0 h-24 rounded-t-xl"
+        />
+        <View className="flex-row justify-between mb-2">
+          {/* Profile Image */}
+          <View className="items-center">
+            <Image
+              source={{ uri: user.profilepicture }}
+              className="w-16 h-16 rounded-full border-2 border-white"
+            />
+          </View>
+          <View>
             <Text
-              key={index}
-              className="bg-green-200 text-green-800 px-3 py-1 rounded-full text-xs my-1 mr-2"
+              numberOfLines={1}
+              className="text-lg font-JakartaBold text-black text-center"
             >
-              {interest}
+              {user.name}
             </Text>
-          ))}
-        </View>
-      </View>
-
-      {/* Skills Section */}
-      <View className="my-1">
-        <Text className="text-lg font-JakartaBold text-black">Skills</Text>
-        <View className="flex-row flex-wrap mt-2">
-          {user.skills.map((skill, index) => (
             <Text
-              key={index}
-              className="bg-purple-200 text-purple-800 px-3 py-1 rounded-full text-xs my-1 mr-2"
+              numberOfLines={2}
+              className="text-sm font-JakartaSemiBold text-white text-center w-[150px]"
             >
-              {skill}
-            </Text>
-          ))}
-        </View>
-      </View>
-
-      {/* Projects Section */}
-      <View className="my-1">
-        <Text className="text-lg font-JakartaBold text-black">Projects</Text>
-        {user.projects.slice(0, 1).map((project, index) => (
-          <View key={index} className="mt-2">
-            <View className="flex-row justify-between">
-              <Text className="text-base font-JakartaMedium text-gray-800">
-                {project.title}
-              </Text>
-              {project.link && (
-                <TouchableOpacity onPress={() => handleLinkPress(project.link)}>
-                  <Ionicons name="link" size={20} color="#3B82F6" />
-                </TouchableOpacity>
-              )}
-            </View>
-            <Text className="text-sm text-gray-600 font-Jakarta">
-              {project.description}
+              {user.designation}
             </Text>
           </View>
-        ))}
-      </View>
 
-      {/* Download Buttons with Icons */}
-      <View className="flex-row justify-end space-x-2">
-        <TouchableOpacity className="bg-gray-200 rounded-full p-3">
-          <MaterialIcons name="description" size={20} color="#4A5568" />
-        </TouchableOpacity>
-        <TouchableOpacity className="bg-gray-200 rounded-full p-3">
-          <MaterialIcons name="email" size={20} color="#4A5568" />
-        </TouchableOpacity>
+          <View className="flex flex-col justify-between items-center">
+            {/* Social Links */}
+            <View className="flex-row space-x-2 mt-2">
+              {user.sociallinks.slice(0, 3).map((link, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => handleLinkPress(link.link)}
+                >
+                  <FontAwesome6 name={link.icon} size={20} />
+                </TouchableOpacity>
+              ))}
+            </View>
+            {/* Resume and Mail Links */}
+            <View className="flex-row justify-end space-x-2">
+              <TouchableOpacity
+                onPress={() => handleLinkPress(user.resume)}
+                className="bg-gray-200 rounded-full p-1"
+              >
+                <MaterialIcons name="description" size={20} color="#02050A" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => handleLinkPress(`mailto:${user.email}`)}
+                className="bg-gray-200 rounded-full p-1"
+              >
+                <MaterialIcons name="email" size={20} color="#02050A" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </View>
+      <View
+        className={`${
+          colorScheme === "dark" ? "bg-[#02050A]" : "bg-white"
+        } px-4 rounded-b-xl pb-4`}
+      >
+        {/* Achievements */}
+        <View className="my-2 flex-wrap flex-row">
+          {user.achievements.slice(0, 3).map((achievement, index) => (
+            <Text
+              key={index}
+              className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs my-1 mr-2 font-JakartaMedium"
+            >
+              {achievement}
+            </Text>
+          ))}
+        </View>
+
+        {/* Bio */}
+        <Text
+          className={`${
+            colorScheme === "dark" ? "text-gray-200" : "text-gray-800"
+          } text-base font-JakartaMedium mb-2`}
+        >
+          {user.profilebio.substring(0, 100)}...
+        </Text>
+
+        {/* Interests Section with Horizontal Scrolling */}
+        <View className="my-1">
+          <Text
+            className={`${
+              colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+            } text-lg font-JakartaBold`}
+          >
+            Interests
+          </Text>
+          <View className="flex-wrap flex-row mt-2">
+            {user.interests.slice(0, 3).map((interest, index) => (
+              <Text
+                key={index}
+                className="bg-green-200 text-green-800 px-3 py-1 rounded-full text-xs my-1 mr-2 font-JakartaMedium"
+              >
+                {interest}
+              </Text>
+            ))}
+          </View>
+        </View>
+
+        {/* Skills Section */}
+        <View className="my-1">
+          <Text
+            className={`${
+              colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+            } text-lg font-JakartaBold`}
+          >
+            Skills
+          </Text>
+          <View className="flex-row flex-wrap mt-2">
+            {user.skills.slice(0, 6).map((skill, index) => (
+              <Text
+                key={index}
+                className="bg-purple-200 text-purple-800 px-3 py-1 rounded-full text-xs my-1 mr-2 font-JakartaMedium"
+              >
+                {skill}
+              </Text>
+            ))}
+          </View>
+        </View>
+
+        {/* Projects Section */}
+        <View className="my-1">
+          <Text
+            className={`${
+              colorScheme === "dark" ? "text-white" : "text-[#02050A]"
+            } text-lg font-JakartaBold`}
+          >
+            Projects
+          </Text>
+          {user.projects.slice(0, 1).map((project, index) => (
+            <View key={index} className="mt-2">
+              <View className="flex-row justify-between">
+                <Text
+                  className={`${
+                    colorScheme === "dark" ? "text-gray-200" : "text-gray-800"
+                  } text-base font-JakartaMedium`}
+                >
+                  {project.title}
+                </Text>
+                {project.link && (
+                  <TouchableOpacity
+                    onPress={() => handleLinkPress(project.link)}
+                  >
+                    <Ionicons name="link" size={20} color="#3B82F6" />
+                  </TouchableOpacity>
+                )}
+              </View>
+              <Text
+                className={`${
+                  colorScheme === "dark" ? "text-gray-300" : "text-gray-600"
+                } text-sm font-Jakarta mt-1`}
+              >
+                {project.description.substring(0, 100)}...
+              </Text>
+            </View>
+          ))}
+        </View>
       </View>
     </View>
   );
@@ -157,9 +230,7 @@ const UserFlashcard = ({ user }: UserFlashcardProps) => {
 const styles = StyleSheet.create({
   card: {
     width: "100%",
-    borderRadius: 10,
-    backgroundColor: "#fefefe",
-
+    borderRadius: 14,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,

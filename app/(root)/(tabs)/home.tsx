@@ -11,6 +11,7 @@ import {
 import CustomButton from "@/components/CustomButton";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useColorScheme } from "nativewind";
+import { StatusBar } from "expo-status-bar";
 
 export const APP_IDENTITY = {
   name: "Radar - Paypal Mafia",
@@ -38,6 +39,10 @@ const home = () => {
 
   return (
     <SafeAreaView className={`${colorScheme === 'dark' ? 'bg-[#02050A]' : 'bg-white'} h-full`}>
+      <StatusBar
+        backgroundColor={colorScheme == "dark" ? "black" : "white"}
+        style={colorScheme == "dark" ? "light" : "dark"}
+      />
       <View className="mx-5 mt-20">
         {/* <View className="flex flex-row items-center justify-between my-5">
           <Text className="text-2xl font-JakartaBold">
