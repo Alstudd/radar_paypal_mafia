@@ -28,6 +28,8 @@
         <data android:scheme="myapp"/>
         <data android:scheme="com.alstudd.radar_paypal_mafia"/>
         <data android:scheme="exp+radarpaypalmafia"/>
+        <data android:scheme="antimatrix"/>
+        <data android:scheme="exp+antimatrix"/>
       </intent-filter>
     </activity>
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" android:exported="false"/>

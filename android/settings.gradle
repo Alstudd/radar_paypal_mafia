@@ -44,7 +44,7 @@ if (getRNMinorVersion() >= 75) {
   }
 }
 
-rootProject.name = 'radar_paypal_mafia'
+rootProject.name = 'AntiMatrix'
 
 dependencyResolutionManagement {
   versionCatalogs {
