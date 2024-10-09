@@ -139,7 +139,7 @@ export default function SolanaWallet({
             dapp_encryption_public_key: base58.encode(dappKeyPair.publicKey),
             cluster: "devnet", // Changed to devnet
             app_url: "https://phantom.app",
-            redirect_link: "myapp://(root)/userFlashcardForm", // Change to antiMatrix
+            redirect_link: "antimatrix://(root)/userFlashcardForm", // Change to antiMatrix
           });
           Linking.openURL(buildUrl("connect", params));
         }}

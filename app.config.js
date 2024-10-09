@@ -1,11 +1,11 @@
 export default {
     "expo": {
-      "name": "radar_paypal_mafia",
-      "slug": "radar_paypal_mafia",
+      "name": "AntiMatrix",
+      "slug": "AntiMatrix",
       "version": "1.0.0",
       "orientation": "portrait",
-      "icon": "./assets/images/check.png",
-      "scheme": "myapp",
+      "icon": "./assets/images/AntiMatrix.png",
+      "scheme": "antimatrix",
       "userInterfaceStyle": "automatic",
       "splash": {
         "image": "./assets/images/AntiMatrix.png",
@@ -18,7 +18,7 @@ export default {
       },
       "android": {
         "adaptiveIcon": {
-          "foregroundImage": "./assets/images/check.png",
+          "foregroundImage": "./assets/images/AntiMatrix.png",
           "backgroundColor": "#ffffff"
         },
         "package": "com.alstudd.radar_paypal_mafia",
@@ -27,7 +27,7 @@ export default {
       "web": {
         "bundler": "metro",
         "output": "server",
-        "favicon": "./assets/images/check.png"
+        "favicon": "./assets/images/AntiMatrix.png"
       },
       "plugins": [
         [
