@@ -15,6 +15,7 @@ import { GlobalProvider } from "@/contexts/GlobalContext";
 SplashScreen.preventAutoHideAsync();
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
+const oktoApiKey = process.env.EXPO_PUBLIC_OKTO_CLIENT_API!;
 
 if (!publishableKey) {
   throw new Error(
@@ -47,7 +48,7 @@ export default function RootLayout() {
 
   return (
     <OktoProvider
-      apiKey="5fd92f3c-9b47-4061-ae27-46eebda47115"
+      apiKey={`${oktoApiKey}`}
       buildType={BuildType.SANDBOX}
     >
       <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>

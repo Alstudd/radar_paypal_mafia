@@ -13,9 +13,7 @@ import { useOkto, Wallet, type OktoContextType } from "okto-sdk-react-native";
 import { fetchAPI } from "@/lib/fetch";
 import { useColorScheme } from "nativewind";
 import { useState } from "react";
-
-const webClientId =
-  "328551301503-nq398rv0ff8nrubpu8l71avde3c0h78e.apps.googleusercontent.com";
+import { webClientId } from "@/constants";
 
 const OAuth = ({ title }: { title: string }) => {
   const { colorScheme } = useColorScheme();

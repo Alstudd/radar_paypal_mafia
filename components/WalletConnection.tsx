@@ -30,9 +30,7 @@ import PortfolioCard from "./PortfolioCard";
 import InputField from "./InputField";
 import { Entypo, FontAwesome6 } from "@expo/vector-icons";
 import { fetchAPI } from "@/lib/fetch";
-
-const webClientId =
-  "328551301503-nq398rv0ff8nrubpu8l71avde3c0h78e.apps.googleusercontent.com";
+import { webClientId } from "@/constants";
 
 const WalletConnection = () => {
   const { colorScheme } = useColorScheme();
